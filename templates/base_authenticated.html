@@ -12,12 +12,33 @@
   }
   #app-sidebar {
     animation: fp-sidebar-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-x: hidden;
   }
   #page-content {
     opacity: 0;
     animation: fp-page-in 0.4s 0.06s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
+  #main-area {
+    margin-left: 16rem;
+    transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .sb-text {
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 200px;
+    transition: max-width 0.2s ease, opacity 0.15s ease;
+  }
+  html.sb-collapsed #app-sidebar       { width: 4rem; }
+  html.sb-collapsed #main-area         { margin-left: 4rem; }
+  html.sb-collapsed .sb-text           { max-width: 0; opacity: 0; }
+  html.sb-collapsed .sb-section        { display: none; }
+  html.sb-collapsed .sb-nav-link       { justify-content: center; padding-left: 0.5rem; padding-right: 0.5rem; gap: 0; }
+  html.sb-collapsed .sidebar-logo-area { justify-content: center; padding-left: 0; padding-right: 0; }
+  html.sb-collapsed .sb-logo-link      { gap: 0; }
+  html.sb-collapsed .sidebar-footer    { justify-content: center; padding-left: 0; padding-right: 0; gap: 0; }
 </style>
+<script>if (localStorage.getItem('finanpy_sb') === '1') { document.documentElement.classList.add('sb-collapsed'); }</script>
 {% endblock %}
 
 {% block content %}
@@ -27,14 +48,14 @@
   <aside id="app-sidebar" class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col fixed h-full z-40">
 
     <!-- Logo -->
-    <div class="h-16 flex items-center px-6 border-b border-gray-800">
-      <a href="{% url 'dashboard' %}" class="flex items-center gap-2.5">
-        <div class="w-7 h-7 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+    <div class="sidebar-logo-area h-16 flex items-center px-6 border-b border-gray-800">
+      <a href="{% url 'dashboard' %}" class="sb-logo-link flex items-center gap-2.5">
+        <div class="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </div>
-        <span class="text-xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
+        <span class="sb-text text-xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
           Finanpy
         </span>
       </a>
@@ -44,97 +65,105 @@
     <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
 
       <!-- Dashboard -->
-      <a href="{% url 'dashboard' %}"
-         class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
+      <a href="{% url 'dashboard' %}" title="Dashboard"
+         class="sb-nav-link flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
            {% if request.resolver_match.url_name == 'dashboard' %}
              bg-violet-600/20 text-violet-400
            {% else %}
              text-gray-400 hover:text-gray-100 hover:bg-gray-800
            {% endif %}">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
         </svg>
-        Dashboard
+        <span class="sb-text">Dashboard</span>
       </a>
 
       <!-- Transações -->
-      <a href="{% url 'transactions:list' %}"
-         class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
+      <a href="{% url 'transactions:list' %}" title="Transações"
+         class="sb-nav-link flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
            {% if request.resolver_match.app_name == 'transactions' %}
              bg-violet-600/20 text-violet-400
            {% else %}
              text-gray-400 hover:text-gray-100 hover:bg-gray-800
            {% endif %}">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
         </svg>
-        Transações
+        <span class="sb-text">Transações</span>
       </a>
 
       <!-- Divisor -->
-      <div class="pt-3 pb-1">
+      <div class="sb-section pt-3 pb-1">
         <p class="px-3 text-xs font-medium text-gray-600 uppercase tracking-wider">Configurações</p>
       </div>
 
       <!-- Contas -->
-      <a href="{% url 'accounts:list' %}"
-         class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
+      <a href="{% url 'accounts:list' %}" title="Contas"
+         class="sb-nav-link flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
            {% if request.resolver_match.app_name == 'accounts' %}
              bg-violet-600/20 text-violet-400
            {% else %}
              text-gray-400 hover:text-gray-100 hover:bg-gray-800
            {% endif %}">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
         </svg>
-        Contas
+        <span class="sb-text">Contas</span>
       </a>
 
       <!-- Categorias -->
-      <a href="{% url 'categories:list' %}"
-         class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
+      <a href="{% url 'categories:list' %}" title="Categorias"
+         class="sb-nav-link flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150
            {% if request.resolver_match.app_name == 'categories' %}
              bg-violet-600/20 text-violet-400
            {% else %}
              text-gray-400 hover:text-gray-100 hover:bg-gray-800
            {% endif %}">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 10V5a2 2 0 012-2z"/>
         </svg>
-        Categorias
+        <span class="sb-text">Categorias</span>
       </a>
 
     </nav>
 
     <!-- Rodapé da sidebar -->
-    <div class="border-t border-gray-800 px-4 py-4">
-      <div class="flex items-center gap-3">
-        <div class="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full w-8 h-8 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-          {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
-        </div>
-        <div class="min-w-0">
-          <p class="text-sm font-medium text-gray-100 truncate">
-            {{ request.user.get_full_name|default:request.user.email }}
-          </p>
-          <p class="text-xs text-gray-500 truncate">{{ request.user.email }}</p>
-        </div>
+    <div class="sidebar-footer border-t border-gray-800 flex items-center gap-3 px-4 py-4">
+      <div class="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full w-8 h-8 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+        {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+      </div>
+      <div class="min-w-0 sb-text">
+        <p class="text-sm font-medium text-gray-100 truncate">
+          {{ request.user.get_full_name|default:request.user.email }}
+        </p>
+        <p class="text-xs text-gray-500 truncate">{{ request.user.email }}</p>
       </div>
     </div>
 
   </aside>
 
   <!-- Conteúdo principal -->
-  <main class="flex-1 ml-64 flex flex-col min-h-screen">
+  <main id="main-area" class="flex-1 flex flex-col min-h-screen">
 
     <!-- Topbar -->
     <header class="h-16 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6 flex-shrink-0 sticky top-0 z-30">
 
-      <!-- Esquerda: título e mensagem do dia -->
-      <div>
-        <h1 class="text-sm font-semibold text-gray-100">{% block page_title %}Painel{% endblock %}</h1>
-        {% if greeting %}
-          <p class="hidden md:block text-xs text-gray-500 mt-0.5 leading-tight max-w-sm truncate">{{ greeting.message }}</p>
-        {% endif %}
+      <!-- Esquerda: toggle + título e mensagem do dia -->
+      <div class="flex items-center gap-3">
+        <button id="sb-toggle"
+                aria-label="Minimizar sidebar"
+                class="p-1.5 rounded-lg text-gray-500 hover:text-gray-100 hover:bg-gray-800
+                       transition-colors duration-150 focus:outline-none flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+          </svg>
+        </button>
+        <div>
+          <h1 class="text-sm font-semibold text-gray-100">{% block page_title %}Painel{% endblock %}</h1>
+          {% if greeting %}
+            <p class="hidden md:block text-xs text-gray-500 mt-0.5 leading-tight max-w-sm truncate">{{ greeting.message }}</p>
+          {% endif %}
+        </div>
       </div>
 
       <!-- Direita: ações -->
@@ -594,6 +623,17 @@
 
     window.openGlobalTxModal  = openGlobalTxModal;
     window.closeGlobalTxModal = closeGlobalTxModal;
+  }());
+
+  /* ── Sidebar toggle ── */
+  (function () {
+    var KEY = 'finanpy_sb';
+    var btn = document.getElementById('sb-toggle');
+    if (!btn) { return; }
+    btn.addEventListener('click', function () {
+      var collapsed = document.documentElement.classList.toggle('sb-collapsed');
+      localStorage.setItem(KEY, collapsed ? '1' : '0');
+    });
   }());
 </script>
 
