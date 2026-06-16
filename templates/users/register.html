@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Criar conta — Finanpy{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-4 py-12">
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 w-full max-w-sm shadow-xl">
+
+    <!-- Logo e subtítulo -->
+    <div class="text-center mb-8">
+      <a href="{% url 'landing' %}" class="inline-block">
+        <span class="text-2xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
+          Finanpy
+        </span>
+      </a>
+      <p class="text-gray-400 text-sm mt-1">Crie sua conta</p>
+    </div>
+
+    <!-- Erros globais -->
+    {% if form.non_field_errors %}
+      <div class="text-rose-400 text-xs bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2 mb-6">
+        {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="space-y-5">
+
+        <!-- Nome e Sobrenome em linha -->
+        <div class="grid grid-cols-2 gap-3">
+
+          <!-- Nome -->
+          <div>
+            <label for="{{ form.first_name.id_for_label }}"
+                   class="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">
+              Nome
+            </label>
+            <input type="text"
+                   name="{{ form.first_name.html_name }}"
+                   id="{{ form.first_name.id_for_label }}"
+                   value="{{ form.first_name.value|default:'' }}"
+                   autocomplete="given-name"
+                   placeholder="Seu nome"
+                   class="bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 w-full
+                          placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500
+                          focus:border-transparent transition-all duration-200
+                          {% if form.first_name.errors %}border-rose-500{% endif %}">
+            {% if form.first_name.errors %}
+              <p class="text-rose-400 text-xs mt-1">{{ form.first_name.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Sobrenome -->
+          <div>
+            <label for="{{ form.last_name.id_for_label }}"
+                   class="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">
+              Sobrenome
+            </label>
+            <input type="text"
+                   name="{{ form.last_name.html_name }}"
+                   id="{{ form.last_name.id_for_label }}"
+                   value="{{ form.last_name.value|default:'' }}"
+                   autocomplete="family-name"
+                   placeholder="Sobrenome"
+                   class="bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 w-full
+                          placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500
+                          focus:border-transparent transition-all duration-200
+                          {% if form.last_name.errors %}border-rose-500{% endif %}">
+            {% if form.last_name.errors %}
+              <p class="text-rose-400 text-xs mt-1">{{ form.last_name.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+        </div>
+
+        <!-- E-mail -->
+        <div>
+          <label for="{{ form.email.id_for_label }}"
+                 class="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">
+            E-mail
+          </label>
+          <input type="email"
+                 name="{{ form.email.html_name }}"
+                 id="{{ form.email.id_for_label }}"
+                 value="{{ form.email.value|default:'' }}"
+                 autocomplete="email"
+                 placeholder="seu@email.com"
+                 class="bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 w-full
+                        placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500
+                        focus:border-transparent transition-all duration-200
+                        {% if form.email.errors %}border-rose-500{% endif %}">
+          {% if form.email.errors %}
+            <p class="text-rose-400 text-xs mt-1">{{ form.email.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Senha -->
+        <div>
+          <label for="{{ form.password1.id_for_label }}"
+                 class="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">
+            Senha
+          </label>
+          <input type="password"
+                 name="{{ form.password1.html_name }}"
+                 id="{{ form.password1.id_for_label }}"
+                 autocomplete="new-password"
+                 placeholder="••••••••"
+                 class="bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 w-full
+                        placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500
+                        focus:border-transparent transition-all duration-200
+                        {% if form.password1.errors %}border-rose-500{% endif %}">
+          {% if form.password1.errors %}
+            {% for error in form.password1.errors %}
+              <p class="text-rose-400 text-xs mt-1">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <!-- Confirmar Senha -->
+        <div>
+          <label for="{{ form.password2.id_for_label }}"
+                 class="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">
+            Confirmar Senha
+          </label>
+          <input type="password"
+                 name="{{ form.password2.html_name }}"
+                 id="{{ form.password2.id_for_label }}"
+                 autocomplete="new-password"
+                 placeholder="••••••••"
+                 class="bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 w-full
+                        placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500
+                        focus:border-transparent transition-all duration-200
+                        {% if form.password2.errors %}border-rose-500{% endif %}">
+          {% if form.password2.errors %}
+            {% for error in form.password2.errors %}
+              <p class="text-rose-400 text-xs mt-1">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+      </div>
+
+      <!-- Botão de envio -->
+      <button type="submit"
+              class="mt-6 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500
+                     text-white text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200 w-full
+                     focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+        Criar conta
+      </button>
+    </form>
+
+    <!-- Link para login -->
+    <p class="text-center text-gray-400 text-sm mt-6">
+      Já tem conta?
+      <a href="{% url 'users:login' %}" class="text-violet-400 hover:text-violet-300 transition-colors duration-150">
+        Entrar
+      </a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}

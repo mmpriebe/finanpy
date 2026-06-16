@@ -1,0 +1,508 @@
+{% extends 'base_authenticated.html' %}
+
+{% block page_title %}Meu Perfil{% endblock %}
+
+{% block page_content %}
+
+<!-- Toast -->
+<div id="toast"
+     class="hidden fixed top-20 right-6 z-50 flex items-center gap-2.5
+            px-4 py-3 rounded-xl text-sm font-medium border shadow-xl
+            transition-all duration-300"
+     style="opacity:0;transform:translateY(-10px)">
+</div>
+
+<div class="max-w-5xl grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4 items-start">
+
+  <!-- ─── COLUNA ESQUERDA ───────────────────────────────────── -->
+  <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+
+    <div class="relative h-14 bg-gradient-to-br from-violet-950 via-indigo-950/80 to-gray-900 select-none"></div>
+
+    <div class="flex flex-col items-center px-5 pb-5">
+      <div class="relative z-10 -mt-7 mb-3 ring-4 ring-gray-900 rounded-full">
+        <div id="hero-avatar"
+             class="w-14 h-14 bg-gradient-to-br from-violet-500 to-indigo-600
+                    rounded-full flex items-center justify-center
+                    text-white text-base font-bold select-none">
+          {{ object.user.first_name|first|upper }}{{ object.user.last_name|first|upper }}
+        </div>
+      </div>
+
+      <h2 id="hero-name" class="text-sm font-semibold text-gray-100 text-center leading-tight">
+        {{ object.user.get_full_name|default:object.user.email }}
+      </h2>
+      <p class="text-xs text-gray-500 mt-0.5 text-center truncate w-full">{{ object.user.email }}</p>
+
+      <span class="inline-flex items-center gap-1.5 mt-3 px-2.5 py-1
+                   bg-emerald-500/10 border border-emerald-500/20
+                   rounded-full text-xs text-emerald-400">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        Conta ativa
+      </span>
+
+      <div class="w-full mt-4 pt-4 border-t border-gray-800 text-center">
+        <p class="text-xs text-gray-600">Membro desde</p>
+        <p class="text-xs text-gray-400 mt-0.5">{{ object.user.created_at|date:"d/m/Y" }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── COLUNA DIREITA: tabs ──────────────────────────────── -->
+  <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+
+    <!-- Tab bar -->
+    <div class="flex border-b border-gray-800">
+      <button type="button" data-tab="personal"
+              class="tab-btn px-5 py-3 text-xs font-medium border-b-2 transition-colors duration-150
+                     border-violet-500 text-violet-400">
+        Dados pessoais
+      </button>
+      <button type="button" data-tab="address"
+              class="tab-btn px-5 py-3 text-xs font-medium border-b-2 transition-colors duration-150
+                     border-transparent text-gray-500 hover:text-gray-300">
+        Endereço
+      </button>
+    </div>
+
+    <!-- ── TAB: Dados pessoais ── -->
+    <div id="tab-personal" class="tab-panel">
+
+      <!-- VIEW -->
+      <div class="view-pane divide-y divide-gray-800/60">
+
+        <div class="flex items-center justify-between px-6 py-3">
+          <p class="text-xs text-gray-600 uppercase tracking-widest">Informações pessoais</p>
+          <button onclick="enterEdit('personal')"
+                  class="edit-trigger flex items-center gap-1.5 text-gray-500 hover:text-gray-100
+                         text-xs px-3 py-1.5 rounded-lg hover:bg-gray-800
+                         transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-violet-500/50">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+            Editar
+          </button>
+        </div>
+
+        <div class="px-6 py-3.5">
+          <p class="text-xs text-gray-500 uppercase tracking-wide">Nome completo</p>
+          <p id="v-fullname" class="text-sm text-gray-100 mt-1">
+            {{ object.user.get_full_name|default:"—" }}
+          </p>
+        </div>
+
+        <div class="px-6 py-3.5">
+          <p class="text-xs text-gray-500 uppercase tracking-wide">E-mail</p>
+          <p class="text-sm text-gray-100 mt-1 truncate">{{ object.user.email }}</p>
+        </div>
+
+        <div class="px-6 py-3.5">
+          <p class="text-xs text-gray-500 uppercase tracking-wide">Telefone</p>
+          <p id="v-phone" class="text-sm mt-1
+             {% if object.phone %}text-gray-100{% else %}text-gray-600 italic{% endif %}">
+            {{ object.phone|default:"Não informado" }}
+          </p>
+        </div>
+
+        <div class="px-6 py-3.5">
+          <p class="text-xs text-gray-500 uppercase tracking-wide">Última atualização</p>
+          <p class="text-sm text-gray-100 mt-1">
+            {{ object.updated_at|date:"d/m/Y \à\s H:i" }}
+          </p>
+        </div>
+
+      </div><!-- /view-pane -->
+
+      <!-- EDIT -->
+      <div class="edit-pane hidden">
+        <div class="px-6 py-3 border-b border-gray-800/60 flex items-center justify-between">
+          <p class="text-xs text-gray-600 uppercase tracking-widest">Editar dados pessoais</p>
+          <button type="button" onclick="cancelEdit('personal')"
+                  class="text-gray-600 hover:text-gray-400 transition-colors p-1 rounded-lg hover:bg-gray-800">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <form class="edit-form p-6 space-y-4" data-tab="personal" novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="tab" value="personal">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1.5">Primeiro nome</label>
+              <input type="text" name="first_name" id="i-first"
+                     value="{{ object.user.first_name }}" autocomplete="given-name" placeholder="Primeiro nome"
+                     class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+              <p id="err-first_name" class="hidden text-rose-400 text-xs mt-1.5"></p>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1.5">Sobrenome</label>
+              <input type="text" name="last_name" id="i-last"
+                     value="{{ object.user.last_name }}" autocomplete="family-name" placeholder="Sobrenome"
+                     class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+              <p id="err-last_name" class="hidden text-rose-400 text-xs mt-1.5"></p>
+            </div>
+          </div>
+          <div class="max-w-[200px]">
+            <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1.5">Telefone</label>
+            <input type="text" name="phone" id="i-phone"
+                   value="{{ object.phone }}" autocomplete="tel" placeholder="(00) 00000-0000"
+                   class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+            <p id="err-phone" class="hidden text-rose-400 text-xs mt-1.5"></p>
+          </div>
+          <div class="flex items-center gap-3 pt-1">
+            <button type="submit"
+                    class="save-btn inline-flex items-center gap-2
+                           bg-gradient-to-r from-violet-600 to-indigo-600
+                           hover:from-violet-500 hover:to-indigo-500
+                           text-white text-sm font-medium px-4 py-2 rounded-lg
+                           transition-all duration-200 focus:outline-none focus:ring-2
+                           focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-gray-900
+                           disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span class="save-lbl">Salvar</span>
+            </button>
+            <button type="button" onclick="cancelEdit('personal')"
+                    class="text-xs text-gray-500 hover:text-gray-300 transition-colors px-1 py-2">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div><!-- /edit-pane -->
+
+    </div><!-- /tab-personal -->
+
+    <!-- ── TAB: Endereço ── -->
+    <div id="tab-address" class="tab-panel hidden">
+
+      <!-- VIEW -->
+      <div class="view-pane divide-y divide-gray-800/60">
+
+        <div class="flex items-center justify-between px-6 py-3">
+          <p class="text-xs text-gray-600 uppercase tracking-widest">Endereço</p>
+          <button onclick="enterEdit('address')"
+                  class="edit-trigger flex items-center gap-1.5 text-gray-500 hover:text-gray-100
+                         text-xs px-3 py-1.5 rounded-lg hover:bg-gray-800
+                         transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-violet-500/50">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+            Editar
+          </button>
+        </div>
+
+        {% if object.street %}
+          <div class="px-6 py-3.5">
+            <p class="text-xs text-gray-500 uppercase tracking-wide">Logradouro</p>
+            <p id="v-street-line" class="text-sm text-gray-100 mt-1">
+              {{ object.street }}{% if object.number %}, {{ object.number }}{% endif %}{% if object.complement %} — {{ object.complement }}{% endif %}
+            </p>
+          </div>
+          <div class="px-6 py-3.5">
+            <p class="text-xs text-gray-500 uppercase tracking-wide">Cidade</p>
+            <p id="v-city-line" class="text-sm text-gray-100 mt-1">
+              {% if object.neighborhood %}{{ object.neighborhood }}, {% endif %}{{ object.city }}{% if object.state %} — {{ object.state }}{% endif %}{% if object.zip_code %}, {{ object.zip_code }}{% endif %}
+            </p>
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-10 px-6 text-center">
+            <div class="w-9 h-9 bg-gray-800 rounded-xl flex items-center justify-center mb-3">
+              <svg class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <p class="text-sm text-gray-400">Endereço não cadastrado</p>
+            <p class="text-xs text-gray-600 mt-1">Clique em Editar para adicionar seu endereço.</p>
+          </div>
+        {% endif %}
+
+      </div><!-- /view-pane -->
+
+      <!-- EDIT -->
+      <div class="edit-pane hidden">
+        <div class="px-6 py-3 border-b border-gray-800/60 flex items-center justify-between">
+          <p class="text-xs text-gray-600 uppercase tracking-widest">Editar endereço</p>
+          <button type="button" onclick="cancelEdit('address')"
+                  class="text-gray-600 hover:text-gray-400 transition-colors p-1 rounded-lg hover:bg-gray-800">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <form class="edit-form p-6 space-y-4" data-tab="address" novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="tab" value="address">
+
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-1">
+              <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1.5">CEP</label>
+              <input type="text" name="zip_code" value="{{ object.zip_code }}" placeholder="00000-000"
+                     class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+              <p id="err-zip_code" class="hidden text-rose-400 text-xs mt-1.5"></p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-4 gap-3">
+            <div class="col-span-3">
+              <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1.5">Rua / Avenida</label>
+              <input type="text" name="street" value="{{ object.street }}" placeholder="Nome da rua"
+                     class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+              <p id="err-street" class="hidden text-rose-400 text-xs mt-1.5"></p>
+            </div>
+            <div class="col-span-1">
+              <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1.5">Número</label>
+              <input type="text" name="number" value="{{ object.number }}" placeholder="Nº"
+                     class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+              <p id="err-number" class="hidden text-rose-400 text-xs mt-1.5"></p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1.5">Complemento</label>
+              <input type="text" name="complement" value="{{ object.complement }}" placeholder="Apto, bloco…"
+                     class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+              <p id="err-complement" class="hidden text-rose-400 text-xs mt-1.5"></p>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1.5">Bairro</label>
+              <input type="text" name="neighborhood" value="{{ object.neighborhood }}" placeholder="Bairro"
+                     class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+              <p id="err-neighborhood" class="hidden text-rose-400 text-xs mt-1.5"></p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-4 gap-3">
+            <div class="col-span-3">
+              <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1.5">Cidade</label>
+              <input type="text" name="city" value="{{ object.city }}" placeholder="Cidade"
+                     class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+              <p id="err-city" class="hidden text-rose-400 text-xs mt-1.5"></p>
+            </div>
+            <div class="col-span-1">
+              <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1.5">UF</label>
+              <input type="text" name="state" value="{{ object.state }}" placeholder="UF" maxlength="2"
+                     class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200 uppercase">
+              <p id="err-state" class="hidden text-rose-400 text-xs mt-1.5"></p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 pt-1">
+            <button type="submit"
+                    class="save-btn inline-flex items-center gap-2
+                           bg-gradient-to-r from-violet-600 to-indigo-600
+                           hover:from-violet-500 hover:to-indigo-500
+                           text-white text-sm font-medium px-4 py-2 rounded-lg
+                           transition-all duration-200 focus:outline-none focus:ring-2
+                           focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-gray-900
+                           disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span class="save-lbl">Salvar</span>
+            </button>
+            <button type="button" onclick="cancelEdit('address')"
+                    class="text-xs text-gray-500 hover:text-gray-300 transition-colors px-1 py-2">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div><!-- /edit-pane -->
+
+    </div><!-- /tab-address -->
+
+  </div><!-- /coluna direita -->
+
+</div>
+
+<script>
+(function () {
+  var toast  = document.getElementById('toast');
+  var tTimer = null;
+
+  /* ── Toast ── */
+  function showToast(msg, ok) {
+    clearTimeout(tTimer);
+    var base   = 'hidden fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium border shadow-xl transition-all duration-300';
+    var colors = ok ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                    : 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+    var ico    = ok
+      ? '<svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+      : '<svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+    toast.className = base + ' ' + colors;
+    toast.innerHTML = ico + '<span>' + msg + '</span>';
+    toast.classList.remove('hidden');
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      toast.style.opacity = '1'; toast.style.transform = 'translateY(0)';
+    }); });
+    tTimer = setTimeout(function () {
+      toast.style.opacity = '0'; toast.style.transform = 'translateY(-10px)';
+      setTimeout(function () { toast.classList.add('hidden'); }, 300);
+    }, 3200);
+  }
+
+  /* ── Tabs ── */
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = btn.dataset.tab;
+
+      document.querySelectorAll('.tab-btn').forEach(function (b) {
+        var active = b.dataset.tab === target;
+        b.classList.toggle('border-violet-500', active);
+        b.classList.toggle('text-violet-400',   active);
+        b.classList.toggle('border-transparent', !active);
+        b.classList.toggle('text-gray-500',      !active);
+        b.classList.toggle('hover:text-gray-300', !active);
+      });
+
+      document.querySelectorAll('.tab-panel').forEach(function (p) {
+        p.classList.toggle('hidden', p.id !== 'tab-' + target);
+      });
+    });
+  });
+
+  /* ── Edit / Cancel ── */
+  function enterEdit(tab) {
+    var panel = document.getElementById('tab-' + tab);
+    var view  = panel.querySelector('.view-pane');
+    var edit  = panel.querySelector('.edit-pane');
+    view.style.cssText += 'transition:opacity .14s ease;opacity:0';
+    setTimeout(function () {
+      view.classList.add('hidden'); view.style.cssText = '';
+      edit.classList.remove('hidden');
+      edit.style.opacity = '0';
+      edit.style.transition = 'opacity .14s ease';
+      requestAnimationFrame(function () { requestAnimationFrame(function () { edit.style.opacity = '1'; }); });
+      var first = edit.querySelector('input');
+      if (first) first.focus();
+    }, 140);
+  }
+
+  function cancelEdit(tab) {
+    var panel = document.getElementById('tab-' + tab);
+    var view  = panel.querySelector('.view-pane');
+    var edit  = panel.querySelector('.edit-pane');
+    clearErrors(panel);
+    edit.style.cssText += 'transition:opacity .14s ease;opacity:0';
+    setTimeout(function () {
+      edit.classList.add('hidden'); edit.style.cssText = '';
+      view.classList.remove('hidden');
+      view.style.opacity = '0';
+      view.style.transition = 'opacity .14s ease';
+      requestAnimationFrame(function () { requestAnimationFrame(function () { view.style.opacity = '1'; }); });
+    }, 140);
+  }
+
+  function clearErrors(panel) {
+    panel.querySelectorAll('[id^="err-"]').forEach(function (el) {
+      el.textContent = ''; el.classList.add('hidden');
+    });
+    panel.querySelectorAll('input').forEach(function (inp) {
+      inp.classList.remove('border-rose-500');
+    });
+  }
+
+  /* ── Submit ── */
+  document.querySelectorAll('.edit-form').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var tab     = form.dataset.tab;
+      var panel   = document.getElementById('tab-' + tab);
+      var saveBtn = form.querySelector('.save-btn');
+      var saveLbl = form.querySelector('.save-lbl');
+      clearErrors(panel);
+      saveBtn.disabled = true;
+      saveLbl.textContent = 'Salvando…';
+
+      fetch("{% url 'profile-edit' %}", {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest',
+                   'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value },
+        body: new FormData(form),
+      })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        saveBtn.disabled = false;
+        saveLbl.textContent = 'Salvar';
+
+        if (data.success) {
+          if (data.tab === 'personal') {
+            var fn  = (data.first_name || '').charAt(0).toUpperCase();
+            var ln  = (data.last_name  || '').charAt(0).toUpperCase();
+            document.getElementById('hero-avatar').textContent = fn + ln || '?';
+            document.getElementById('hero-name').textContent   = data.full_name || '';
+            document.getElementById('v-fullname').textContent  = data.full_name || '—';
+            var vph = document.getElementById('v-phone');
+            var ph  = data.phone || '';
+            vph.textContent = ph || 'Não informado';
+            vph.className   = 'text-sm mt-1 ' + (ph ? 'text-gray-100' : 'text-gray-600 italic');
+            cancelEdit(tab);
+          }
+
+          if (data.tab === 'address') {
+            var sl = document.getElementById('v-street-line');
+            var cl = document.getElementById('v-city-line');
+
+            if (sl && cl) {
+              var streetLine = data.street || '';
+              if (data.number) streetLine += ', ' + data.number;
+              if (data.complement) streetLine += ' — ' + data.complement;
+              sl.textContent = streetLine || '—';
+
+              var cityLine = '';
+              if (data.neighborhood) cityLine += data.neighborhood + ', ';
+              cityLine += data.city || '';
+              if (data.state) cityLine += ' — ' + data.state;
+              if (data.zip_code) cityLine += ', ' + data.zip_code;
+              cl.textContent = cityLine;
+
+              cancelEdit(tab);
+            } else {
+              /* endereço era vazio — recarrega para renderizar os campos corretamente */
+              window.location.reload();
+              return;
+            }
+          }
+
+          showToast('Salvo com sucesso.', true);
+        } else {
+          Object.keys(data.errors || {}).forEach(function (f) {
+            var err = document.getElementById('err-' + f);
+            var inp = panel.querySelector('[name="' + f + '"]');
+            if (err) { err.textContent = data.errors[f].join(' '); err.classList.remove('hidden'); }
+            if (inp) inp.classList.add('border-rose-500');
+          });
+          showToast('Verifique os campos e tente novamente.', false);
+        }
+      })
+      .catch(function () {
+        saveBtn.disabled = false;
+        saveLbl.textContent = 'Salvar';
+        showToast('Erro inesperado. Tente novamente.', false);
+      });
+    });
+  });
+
+  /* ── Live avatar preview ── */
+  ['i-first','i-last'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', function () {
+      var f = (document.getElementById('i-first').value || '').charAt(0).toUpperCase();
+      var l = (document.getElementById('i-last').value  || '').charAt(0).toUpperCase();
+      document.getElementById('hero-avatar').textContent = f + l || '?';
+    });
+  });
+
+  window.enterEdit  = enterEdit;
+  window.cancelEdit = cancelEdit;
+}());
+</script>
+
+{% endblock %}

@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from profiles.models import UserProfile
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'phone', 'created_at')
+    search_fields = ('user__email', 'phone')
+    readonly_fields = ('created_at', 'updated_at')

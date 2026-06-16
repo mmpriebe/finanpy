@@ -1,0 +1,902 @@
+{% extends 'base_authenticated.html' %}
+{% load finance_filters %}
+
+{% block page_title %}Categorias{% endblock %}
+
+{% block page_content %}
+
+<!-- Modal: Nova Categoria -->
+<div id="category-modal" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4 py-8 opacity-0 transition-opacity duration-200">
+  <div id="category-modal-card" class="bg-gray-900 border border-gray-800 rounded-xl max-w-lg w-full mx-auto shadow-2xl opacity-0 scale-95 transition-all duration-200">
+
+    <!-- Header do modal -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-gray-800">
+      <div class="flex items-center gap-3">
+        <div class="bg-violet-600/20 p-2.5 rounded-xl">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 10V5a2 2 0 012-2z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-base font-semibold text-gray-100">Nova Categoria</h3>
+          <p class="text-xs text-gray-400 mt-0.5">Classifique suas receitas e despesas</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeCategoryModal()"
+              class="text-gray-500 hover:text-gray-100 transition-colors duration-150 focus:outline-none p-1 rounded-lg hover:bg-gray-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Formulário -->
+    <form id="category-create-form" novalidate>
+      {% csrf_token %}
+
+      <div class="px-6 py-6 space-y-5">
+
+        <!-- Campo Nome -->
+        <div>
+          <label for="modal-name" class="flex items-center gap-1.5 text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+            Nome
+          </label>
+          <input type="text" name="name" id="modal-name" autocomplete="off"
+                 placeholder="Ex.: Salário, Alimentação, Transporte…"
+                 class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2.5
+                        placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500
+                        focus:border-transparent transition-all duration-200">
+          <p class="text-gray-500 text-xs mt-1.5">Escolha um nome claro e fácil de identificar</p>
+          <p id="error-name" class="text-rose-400 text-xs mt-1 hidden"></p>
+        </div>
+
+        <!-- Campo Tipo -->
+        <div>
+          <label for="modal-transaction-type" class="flex items-center gap-1.5 text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+            </svg>
+            Tipo
+          </label>
+          <select name="transaction_type" id="modal-transaction-type"
+                  class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2.5
+                         focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent
+                         transition-all duration-200">
+            <option value="">Selecione o tipo</option>
+            <option value="income">Receita</option>
+            <option value="expense">Despesa</option>
+          </select>
+          <p class="text-gray-500 text-xs mt-1.5">Define se esta categoria agrupa entradas ou saídas de dinheiro</p>
+          <p id="error-transaction-type" class="text-rose-400 text-xs mt-1 hidden"></p>
+        </div>
+
+        <!-- Preview ao vivo -->
+        <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Visualização</p>
+          <div class="flex items-center gap-2.5">
+            <div id="preview-icon" class="p-1.5 rounded-lg bg-gray-700 flex-shrink-0 transition-colors duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" id="preview-icon-svg" class="w-4 h-4 text-gray-500 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 10V5a2 2 0 012-2z"/>
+              </svg>
+            </div>
+            <span id="preview-name" class="text-sm text-gray-500 italic transition-colors duration-200">Nome da categoria</span>
+            <span id="preview-badge" class="hidden text-xs px-2 py-0.5 rounded-full font-medium border transition-all duration-200"></span>
+          </div>
+        </div>
+
+        <!-- Dica -->
+        <div class="bg-gray-800/40 border border-gray-700/60 rounded-lg p-4">
+          <div class="flex items-start gap-2.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-violet-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+            <div>
+              <p class="text-violet-400 text-xs font-semibold mb-1 uppercase tracking-wide">Dica</p>
+              <p class="text-gray-400 text-xs leading-relaxed">
+                Categorias ajudam a entender para onde vai o seu dinheiro. Use nomes objetivos como <span class="text-gray-300">"Alimentação"</span>, <span class="text-gray-300">"Salário"</span> ou <span class="text-gray-300">"Transporte"</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Erro geral -->
+        <p id="error-general" class="text-rose-400 text-xs hidden"></p>
+
+      </div>
+
+      <!-- Footer do modal -->
+      <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-800">
+        <button type="button" onclick="closeCategoryModal()"
+                class="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-gray-100
+                       text-sm font-medium px-4 py-2 rounded-lg border border-gray-700 transition-all duration-200 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          Cancelar
+        </button>
+        <button type="submit"
+                class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500
+                       text-white text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200
+                       focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-gray-900
+                       flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          Salvar Categoria
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- Modal: Editar Categoria -->
+<div id="category-edit-modal" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4 py-8 opacity-0 transition-opacity duration-200">
+  <div id="category-edit-modal-card" class="bg-gray-900 border border-gray-800 rounded-xl max-w-lg w-full mx-auto shadow-2xl opacity-0 scale-95 transition-all duration-200">
+
+    <!-- Header do modal -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-gray-800">
+      <div class="flex items-center gap-3">
+        <div class="bg-violet-600/20 p-2.5 rounded-xl">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-base font-semibold text-gray-100">Editar Categoria</h3>
+          <p class="text-xs text-gray-400 mt-0.5">Atualize os dados desta categoria</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeEditCategoryModal()"
+              class="text-gray-500 hover:text-gray-100 transition-colors duration-150 focus:outline-none p-1 rounded-lg hover:bg-gray-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Formulário -->
+    <form id="category-edit-form" novalidate>
+      {% csrf_token %}
+
+      <div class="px-6 py-6 space-y-5">
+
+        <!-- Campo Nome -->
+        <div>
+          <label for="edit-modal-name" class="flex items-center gap-1.5 text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+            Nome
+          </label>
+          <input type="text" name="name" id="edit-modal-name" autocomplete="off"
+                 placeholder="Ex.: Salário, Alimentação, Transporte…"
+                 class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2.5
+                        placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500
+                        focus:border-transparent transition-all duration-200">
+          <p class="text-gray-500 text-xs mt-1.5">Escolha um nome claro e fácil de identificar</p>
+          <p id="edit-error-name" class="text-rose-400 text-xs mt-1 hidden"></p>
+        </div>
+
+        <!-- Campo Tipo -->
+        <div>
+          <label for="edit-modal-transaction-type" class="flex items-center gap-1.5 text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+            </svg>
+            Tipo
+          </label>
+          <select name="transaction_type" id="edit-modal-transaction-type"
+                  class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg px-3 py-2.5
+                         focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent
+                         transition-all duration-200">
+            <option value="">Selecione o tipo</option>
+            <option value="income">Receita</option>
+            <option value="expense">Despesa</option>
+          </select>
+          <p class="text-gray-500 text-xs mt-1.5">Define se esta categoria agrupa entradas ou saídas de dinheiro</p>
+          <p id="edit-error-transaction-type" class="text-rose-400 text-xs mt-1 hidden"></p>
+        </div>
+
+        <!-- Preview ao vivo -->
+        <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+          <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Visualização</p>
+          <div class="flex items-center gap-2.5">
+            <div id="edit-preview-icon" class="p-1.5 rounded-lg bg-gray-700 flex-shrink-0 transition-colors duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" id="edit-preview-icon-svg" class="w-4 h-4 text-gray-500 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 10V5a2 2 0 012-2z"/>
+              </svg>
+            </div>
+            <span id="edit-preview-name" class="text-sm text-gray-500 italic transition-colors duration-200">Nome da categoria</span>
+            <span id="edit-preview-badge" class="hidden text-xs px-2 py-0.5 rounded-full font-medium border transition-all duration-200"></span>
+          </div>
+        </div>
+
+        <!-- Dica -->
+        <div class="bg-gray-800/40 border border-gray-700/60 rounded-lg p-4">
+          <div class="flex items-start gap-2.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-violet-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+            <div>
+              <p class="text-violet-400 text-xs font-semibold mb-1 uppercase tracking-wide">Dica</p>
+              <p class="text-gray-400 text-xs leading-relaxed">
+                Categorias ajudam a entender para onde vai o seu dinheiro. Use nomes objetivos como <span class="text-gray-300">"Alimentação"</span>, <span class="text-gray-300">"Salário"</span> ou <span class="text-gray-300">"Transporte"</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Erro geral -->
+        <p id="edit-error-general" class="text-rose-400 text-xs hidden"></p>
+
+      </div>
+
+      <!-- Footer do modal -->
+      <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-800">
+        <button type="button" onclick="closeEditCategoryModal()"
+                class="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-gray-100
+                       text-sm font-medium px-4 py-2 rounded-lg border border-gray-700 transition-all duration-200 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          Cancelar
+        </button>
+        <button type="submit"
+                class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500
+                       text-white text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200
+                       focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-gray-900
+                       flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          Salvar Alterações
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- Header da página -->
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="text-xl font-semibold text-gray-100">Categorias</h2>
+    <p class="text-sm text-gray-400 mt-1">Organize suas receitas e despesas por categoria</p>
+  </div>
+  <button type="button" onclick="openCategoryModal()"
+          class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500
+                 text-white text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200
+                 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-gray-900
+                 flex items-center gap-2">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Nova Categoria
+  </button>
+</div>
+
+{% if categories %}
+
+  {% with income_list=categories|by_type:'income' expense_list=categories|by_type:'expense' %}
+
+  <!-- Linha de abas -->
+  <div class="flex items-end gap-1 border-b border-gray-800 mb-6">
+
+    <!-- Aba Receitas -->
+    <button id="tab-income"
+            onclick="switchTab('income')"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors duration-150 focus:outline-none
+                   border-b-2 -mb-px text-emerald-400 border-emerald-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+      </svg>
+      Receitas
+      <span class="inline-flex items-center bg-emerald-400/10 text-emerald-400 text-xs px-1.5 py-0.5 rounded-full font-medium">
+        {{ income_list|length }}
+      </span>
+    </button>
+
+    <!-- Aba Despesas -->
+    <button id="tab-expense"
+            onclick="switchTab('expense')"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors duration-150 focus:outline-none
+                   border-b-2 -mb-px text-gray-400 border-transparent hover:text-gray-200">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
+      </svg>
+      Despesas
+      <span class="inline-flex items-center bg-rose-400/10 text-rose-400 text-xs px-1.5 py-0.5 rounded-full font-medium">
+        {{ expense_list|length }}
+      </span>
+    </button>
+
+  </div>
+
+  <!-- Painel Receitas -->
+  <div id="panel-income">
+    {% if income_list %}
+      <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-800">
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Nome</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Tipo</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Status</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for category in income_list %}
+            <tr class="border-b border-gray-800 last:border-0 hover:bg-gray-800/50 transition-colors duration-150{% if not category.is_active %} opacity-50{% endif %}">
+
+              <!-- Nome -->
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="bg-emerald-400/10 p-1.5 rounded-lg flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 10V5a2 2 0 012-2z"/>
+                    </svg>
+                  </div>
+                  <span class="text-gray-100 font-medium">{{ category.name }}</span>
+                </div>
+              </td>
+
+              <!-- Tipo -->
+              <td class="px-4 py-3">
+                <span class="inline-flex items-center bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 text-xs px-2 py-0.5 rounded-full font-medium">
+                  Receita
+                </span>
+              </td>
+
+              <!-- Status -->
+              <td class="px-4 py-3">
+                {% if category.is_active %}
+                  <span class="inline-flex items-center bg-emerald-900/30 text-emerald-400 text-xs px-2 py-1 rounded-full">Ativa</span>
+                {% else %}
+                  <span class="inline-flex items-center bg-gray-800 text-gray-500 text-xs px-2 py-1 rounded-full">Inativa</span>
+                {% endif %}
+              </td>
+
+              <!-- Ações -->
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                  <button type="button"
+                          data-pk="{{ category.pk }}"
+                          data-name="{{ category.name }}"
+                          data-type="{{ category.transaction_type }}"
+                          data-url="{% url 'categories:update' category.pk %}"
+                          onclick="openEditCategoryModal(this)"
+                          class="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-gray-100 text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-700 transition-all duration-200 flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                    </svg>
+                    Editar
+                  </button>
+                  <form method="post" action="{% url 'categories:toggle' category.pk %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="{% if category.is_active %}bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 hover:text-rose-300 border border-rose-600/30{% else %}bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 hover:text-emerald-300 border border-emerald-600/30{% endif %} text-xs font-medium px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center gap-1.5">
+                      {% if category.is_active %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                        </svg>
+                        Desativar
+                      {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        Ativar
+                      {% endif %}
+                    </button>
+                  </form>
+                </div>
+              </td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    {% else %}
+      <!-- Estado vazio: sem categorias de receita -->
+      <div class="bg-gray-900 border border-gray-800 border-dashed rounded-xl px-6 py-8 flex flex-col items-center justify-center text-center">
+        <p class="text-gray-500 text-sm mb-3">Nenhuma categoria de receita cadastrada</p>
+        <button type="button" onclick="openCategoryModal()"
+                class="text-violet-400 hover:text-violet-300 text-xs font-medium transition-colors duration-150">
+          Criar categoria de receita
+        </button>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Painel Despesas (oculto por padrão) -->
+  <div id="panel-expense" class="hidden">
+    {% if expense_list %}
+      <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-800">
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Nome</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Tipo</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Status</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for category in expense_list %}
+            <tr class="border-b border-gray-800 last:border-0 hover:bg-gray-800/50 transition-colors duration-150{% if not category.is_active %} opacity-50{% endif %}">
+
+              <!-- Nome -->
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="bg-rose-400/10 p-1.5 rounded-lg flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 10V5a2 2 0 012-2z"/>
+                    </svg>
+                  </div>
+                  <span class="text-gray-100 font-medium">{{ category.name }}</span>
+                </div>
+              </td>
+
+              <!-- Tipo -->
+              <td class="px-4 py-3">
+                <span class="inline-flex items-center bg-rose-400/10 text-rose-400 border border-rose-400/20 text-xs px-2 py-0.5 rounded-full font-medium">
+                  Despesa
+                </span>
+              </td>
+
+              <!-- Status -->
+              <td class="px-4 py-3">
+                {% if category.is_active %}
+                  <span class="inline-flex items-center bg-emerald-900/30 text-emerald-400 text-xs px-2 py-1 rounded-full">Ativa</span>
+                {% else %}
+                  <span class="inline-flex items-center bg-gray-800 text-gray-500 text-xs px-2 py-1 rounded-full">Inativa</span>
+                {% endif %}
+              </td>
+
+              <!-- Ações -->
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                  <button type="button"
+                          data-pk="{{ category.pk }}"
+                          data-name="{{ category.name }}"
+                          data-type="{{ category.transaction_type }}"
+                          data-url="{% url 'categories:update' category.pk %}"
+                          onclick="openEditCategoryModal(this)"
+                          class="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-gray-100 text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-700 transition-all duration-200 flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                    </svg>
+                    Editar
+                  </button>
+                  <form method="post" action="{% url 'categories:toggle' category.pk %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="{% if category.is_active %}bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 hover:text-rose-300 border border-rose-600/30{% else %}bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 hover:text-emerald-300 border border-emerald-600/30{% endif %} text-xs font-medium px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center gap-1.5">
+                      {% if category.is_active %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                        </svg>
+                        Desativar
+                      {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        Ativar
+                      {% endif %}
+                    </button>
+                  </form>
+                </div>
+              </td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    {% else %}
+      <!-- Estado vazio: sem categorias de despesa -->
+      <div class="bg-gray-900 border border-gray-800 border-dashed rounded-xl px-6 py-8 flex flex-col items-center justify-center text-center">
+        <p class="text-gray-500 text-sm mb-3">Nenhuma categoria de despesa cadastrada</p>
+        <button type="button" onclick="openCategoryModal()"
+                class="text-violet-400 hover:text-violet-300 text-xs font-medium transition-colors duration-150">
+          Criar categoria de despesa
+        </button>
+      </div>
+    {% endif %}
+  </div>
+
+  {% endwith %}
+
+{% else %}
+
+  <!-- Estado vazio global -->
+  <div class="bg-gray-900 border border-gray-800 rounded-xl p-12 flex flex-col items-center justify-center text-center">
+    <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 10V5a2 2 0 012-2z"/>
+      </svg>
+    </div>
+    <p class="text-gray-100 font-medium mb-1">Nenhuma categoria cadastrada ainda</p>
+    <p class="text-gray-400 text-sm mb-4 max-w-xs">
+      Crie categorias para organizar suas receitas e despesas com mais clareza
+    </p>
+
+    <!-- Exemplos de categorias -->
+    <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
+      <span class="inline-flex items-center bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 text-xs px-2 py-0.5 rounded-full font-medium">Salário</span>
+      <span class="inline-flex items-center bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 text-xs px-2 py-0.5 rounded-full font-medium">Freelance</span>
+      <span class="inline-flex items-center bg-rose-400/10 text-rose-400 border border-rose-400/20 text-xs px-2 py-0.5 rounded-full font-medium">Alimentação</span>
+      <span class="inline-flex items-center bg-rose-400/10 text-rose-400 border border-rose-400/20 text-xs px-2 py-0.5 rounded-full font-medium">Moradia</span>
+      <span class="inline-flex items-center bg-rose-400/10 text-rose-400 border border-rose-400/20 text-xs px-2 py-0.5 rounded-full font-medium">Transporte</span>
+    </div>
+
+    <button type="button" onclick="openCategoryModal()"
+            class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500
+                   text-white text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200
+                   focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+      Criar Primeira Categoria
+    </button>
+  </div>
+
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  /* ── Modal: Nova Categoria ── */
+  (function () {
+    var modal       = document.getElementById('category-modal');
+    var card        = document.getElementById('category-modal-card');
+    var form        = document.getElementById('category-create-form');
+    var nameInput   = document.getElementById('modal-name');
+    var typeSelect  = document.getElementById('modal-transaction-type');
+    var previewName  = document.getElementById('preview-name');
+    var previewBadge = document.getElementById('preview-badge');
+    var previewIcon  = document.getElementById('preview-icon');
+    var previewIconSvg = document.getElementById('preview-icon-svg');
+
+    function clearErrors() {
+      ['error-name', 'error-transaction-type', 'error-general'].forEach(function (id) {
+        var el = document.getElementById(id);
+        el.textContent = '';
+        el.classList.add('hidden');
+      });
+    }
+
+    function resetPreview() {
+      previewName.textContent = 'Nome da categoria';
+      previewName.className = 'text-sm text-gray-500 italic transition-colors duration-200';
+      previewBadge.className = 'hidden';
+      previewIcon.className = 'p-1.5 rounded-lg bg-gray-700 flex-shrink-0 transition-colors duration-200';
+      previewIconSvg.className = 'w-4 h-4 text-gray-500 transition-colors duration-200';
+    }
+
+    function updatePreview() {
+      var name = nameInput.value.trim();
+      var type = typeSelect.value;
+
+      // Nome
+      if (name) {
+        previewName.textContent = name;
+        previewName.className = 'text-sm text-gray-100 font-medium transition-colors duration-200';
+      } else {
+        previewName.textContent = 'Nome da categoria';
+        previewName.className = 'text-sm text-gray-500 italic transition-colors duration-200';
+      }
+
+      // Badge e ícone por tipo
+      if (type === 'income') {
+        previewBadge.textContent = 'Receita';
+        previewBadge.className = 'inline-flex items-center bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 text-xs px-2 py-0.5 rounded-full font-medium transition-all duration-200';
+        previewIcon.className = 'p-1.5 rounded-lg bg-emerald-400/10 flex-shrink-0 transition-colors duration-200';
+        previewIconSvg.className = 'w-4 h-4 text-emerald-400 transition-colors duration-200';
+      } else if (type === 'expense') {
+        previewBadge.textContent = 'Despesa';
+        previewBadge.className = 'inline-flex items-center bg-rose-400/10 text-rose-400 border border-rose-400/20 text-xs px-2 py-0.5 rounded-full font-medium transition-all duration-200';
+        previewIcon.className = 'p-1.5 rounded-lg bg-rose-400/10 flex-shrink-0 transition-colors duration-200';
+        previewIconSvg.className = 'w-4 h-4 text-rose-400 transition-colors duration-200';
+      } else {
+        previewBadge.className = 'hidden';
+        previewIcon.className = 'p-1.5 rounded-lg bg-gray-700 flex-shrink-0 transition-colors duration-200';
+        previewIconSvg.className = 'w-4 h-4 text-gray-500 transition-colors duration-200';
+      }
+    }
+
+    nameInput.addEventListener('input', updatePreview);
+    typeSelect.addEventListener('change', updatePreview);
+
+    function openCategoryModal() {
+      form.reset();
+      clearErrors();
+      resetPreview();
+      modal.classList.remove('hidden');
+      // Duplo rAF garante que o browser pintou antes de iniciar a transição
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          modal.classList.add('opacity-100');
+          modal.classList.remove('opacity-0');
+          card.classList.add('opacity-100', 'scale-100');
+          card.classList.remove('opacity-0', 'scale-95');
+          nameInput.focus();
+        });
+      });
+    }
+
+    function closeCategoryModal() {
+      modal.classList.remove('opacity-100');
+      modal.classList.add('opacity-0');
+      card.classList.remove('opacity-100', 'scale-100');
+      card.classList.add('opacity-0', 'scale-95');
+      setTimeout(function () { modal.classList.add('hidden'); }, 200);
+    }
+
+    // Fechar ao clicar no overlay (fora do card)
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) { closeCategoryModal(); }
+    });
+
+    // Fechar com Escape
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        closeCategoryModal();
+      }
+    });
+
+    // Submit via fetch
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearErrors();
+
+      var csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+      var data = new FormData(form);
+
+      fetch("{% url 'categories:create' %}", {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': csrfToken,
+        },
+        body: data,
+      })
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+          if (data.success) {
+            closeCategoryModal();
+            window.location.reload();
+          } else {
+            Object.keys(data.errors).forEach(function (field) {
+              var msgs = data.errors[field];
+              var errorId = 'error-' + field.replace(/_/g, '-');
+              var errorEl = document.getElementById(errorId);
+              if (errorEl) {
+                errorEl.textContent = msgs.join(' ');
+                errorEl.classList.remove('hidden');
+              } else {
+                var generalEl = document.getElementById('error-general');
+                generalEl.textContent = msgs.join(' ');
+                generalEl.classList.remove('hidden');
+              }
+            });
+          }
+        })
+        .catch(function () {
+          var generalEl = document.getElementById('error-general');
+          generalEl.textContent = 'Ocorreu um erro inesperado. Tente novamente.';
+          generalEl.classList.remove('hidden');
+        });
+    });
+
+    window.openCategoryModal  = openCategoryModal;
+    window.closeCategoryModal = closeCategoryModal;
+  }());
+
+  /* ── Abas: Receitas / Despesas ── */
+  (function () {
+    var tabIncome  = document.getElementById('tab-income');
+    var tabExpense = document.getElementById('tab-expense');
+    var panelIncome  = document.getElementById('panel-income');
+    var panelExpense = document.getElementById('panel-expense');
+
+    // Classe CSS para cada aba ativa
+    var activeIncomeClasses  = ['text-emerald-400', 'border-emerald-400'];
+    var activeExpenseClasses = ['text-rose-400',    'border-rose-400'];
+    var inactiveClasses      = ['text-gray-400',    'border-transparent', 'hover:text-gray-200'];
+
+    function applyClasses(el, classes) {
+      classes.forEach(function (c) { el.classList.add(c); });
+    }
+
+    function removeClasses(el, classes) {
+      classes.forEach(function (c) { el.classList.remove(c); });
+    }
+
+    function switchTab(type) {
+      if (type === 'income') {
+        // Ativar aba Receitas
+        removeClasses(tabIncome, inactiveClasses);
+        applyClasses(tabIncome, activeIncomeClasses);
+
+        // Desativar aba Despesas
+        removeClasses(tabExpense, activeExpenseClasses);
+        applyClasses(tabExpense, inactiveClasses);
+
+        panelIncome.classList.remove('hidden');
+        panelExpense.classList.add('hidden');
+      } else {
+        // Ativar aba Despesas
+        removeClasses(tabExpense, inactiveClasses);
+        applyClasses(tabExpense, activeExpenseClasses);
+
+        // Desativar aba Receitas
+        removeClasses(tabIncome, activeIncomeClasses);
+        applyClasses(tabIncome, inactiveClasses);
+
+        panelExpense.classList.remove('hidden');
+        panelIncome.classList.add('hidden');
+      }
+    }
+
+    // Expor para os atributos onclick no HTML
+    window.switchTab = switchTab;
+  }());
+
+  /* ── Modal: Editar Categoria ── */
+  (function () {
+    var modal      = document.getElementById('category-edit-modal');
+    var card       = document.getElementById('category-edit-modal-card');
+    var form       = document.getElementById('category-edit-form');
+    var nameInput  = document.getElementById('edit-modal-name');
+    var typeSelect = document.getElementById('edit-modal-transaction-type');
+    var previewName    = document.getElementById('edit-preview-name');
+    var previewBadge   = document.getElementById('edit-preview-badge');
+    var previewIcon    = document.getElementById('edit-preview-icon');
+    var previewIconSvg = document.getElementById('edit-preview-icon-svg');
+
+    function clearEditErrors() {
+      ['edit-error-name', 'edit-error-transaction-type', 'edit-error-general'].forEach(function (id) {
+        var el = document.getElementById(id);
+        el.textContent = '';
+        el.classList.add('hidden');
+      });
+    }
+
+    function resetEditPreview() {
+      previewName.textContent = 'Nome da categoria';
+      previewName.className = 'text-sm text-gray-500 italic transition-colors duration-200';
+      previewBadge.className = 'hidden';
+      previewIcon.className = 'p-1.5 rounded-lg bg-gray-700 flex-shrink-0 transition-colors duration-200';
+      previewIconSvg.className = 'w-4 h-4 text-gray-500 transition-colors duration-200';
+    }
+
+    function updateEditPreview() {
+      var name = nameInput.value.trim();
+      var type = typeSelect.value;
+
+      // Nome
+      if (name) {
+        previewName.textContent = name;
+        previewName.className = 'text-sm text-gray-100 font-medium transition-colors duration-200';
+      } else {
+        previewName.textContent = 'Nome da categoria';
+        previewName.className = 'text-sm text-gray-500 italic transition-colors duration-200';
+      }
+
+      // Badge e ícone por tipo
+      if (type === 'income') {
+        previewBadge.textContent = 'Receita';
+        previewBadge.className = 'inline-flex items-center bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 text-xs px-2 py-0.5 rounded-full font-medium transition-all duration-200';
+        previewIcon.className = 'p-1.5 rounded-lg bg-emerald-400/10 flex-shrink-0 transition-colors duration-200';
+        previewIconSvg.className = 'w-4 h-4 text-emerald-400 transition-colors duration-200';
+      } else if (type === 'expense') {
+        previewBadge.textContent = 'Despesa';
+        previewBadge.className = 'inline-flex items-center bg-rose-400/10 text-rose-400 border border-rose-400/20 text-xs px-2 py-0.5 rounded-full font-medium transition-all duration-200';
+        previewIcon.className = 'p-1.5 rounded-lg bg-rose-400/10 flex-shrink-0 transition-colors duration-200';
+        previewIconSvg.className = 'w-4 h-4 text-rose-400 transition-colors duration-200';
+      } else {
+        previewBadge.className = 'hidden';
+        previewIcon.className = 'p-1.5 rounded-lg bg-gray-700 flex-shrink-0 transition-colors duration-200';
+        previewIconSvg.className = 'w-4 h-4 text-gray-500 transition-colors duration-200';
+      }
+    }
+
+    nameInput.addEventListener('input', updateEditPreview);
+    typeSelect.addEventListener('change', updateEditPreview);
+
+    function openEditCategoryModal(btn) {
+      nameInput.value  = btn.dataset.name;
+      typeSelect.value = btn.dataset.type;
+      form.dataset.updateUrl = btn.dataset.url;
+      updateEditPreview();
+      clearEditErrors();
+      modal.classList.remove('hidden');
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          modal.classList.add('opacity-100');
+          modal.classList.remove('opacity-0');
+          card.classList.add('opacity-100', 'scale-100');
+          card.classList.remove('opacity-0', 'scale-95');
+          nameInput.focus();
+        });
+      });
+    }
+
+    function closeEditCategoryModal() {
+      modal.classList.remove('opacity-100');
+      modal.classList.add('opacity-0');
+      card.classList.remove('opacity-100', 'scale-100');
+      card.classList.add('opacity-0', 'scale-95');
+      setTimeout(function () { modal.classList.add('hidden'); }, 200);
+    }
+
+    // Fechar ao clicar no overlay (fora do card)
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) { closeEditCategoryModal(); }
+    });
+
+    // Fechar com Escape
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        closeEditCategoryModal();
+      }
+    });
+
+    // Submit via fetch para a URL dinâmica do form
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearEditErrors();
+
+      var csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      fetch(form.dataset.updateUrl, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': csrfToken,
+        },
+        body: new FormData(form),
+      })
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+          if (data.success) {
+            closeEditCategoryModal();
+            window.location.reload();
+          } else {
+            Object.keys(data.errors).forEach(function (field) {
+              var msgs = data.errors[field];
+              var errorId = 'edit-error-' + field.replace(/_/g, '-');
+              var errorEl = document.getElementById(errorId);
+              if (errorEl) {
+                errorEl.textContent = msgs.join(' ');
+                errorEl.classList.remove('hidden');
+              } else {
+                var generalEl = document.getElementById('edit-error-general');
+                generalEl.textContent = msgs.join(' ');
+                generalEl.classList.remove('hidden');
+              }
+            });
+          }
+        })
+        .catch(function () {
+          var generalEl = document.getElementById('edit-error-general');
+          generalEl.textContent = 'Ocorreu um erro inesperado. Tente novamente.';
+          generalEl.classList.remove('hidden');
+        });
+    });
+
+    window.openEditCategoryModal  = openEditCategoryModal;
+    window.closeEditCategoryModal = closeEditCategoryModal;
+  }());
+</script>
+{% endblock %}
