@@ -129,8 +129,13 @@
     <!-- Topbar -->
     <header class="h-16 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6 flex-shrink-0 sticky top-0 z-30">
 
-      <!-- Esquerda: título da página -->
-      <h1 class="text-sm font-semibold text-gray-100">{% block page_title %}Painel{% endblock %}</h1>
+      <!-- Esquerda: título e mensagem do dia -->
+      <div>
+        <h1 class="text-sm font-semibold text-gray-100">{% block page_title %}Painel{% endblock %}</h1>
+        {% if greeting %}
+          <p class="hidden md:block text-xs text-gray-500 mt-0.5 leading-tight max-w-sm truncate">{{ greeting.message }}</p>
+        {% endif %}
+      </div>
 
       <!-- Direita: ações -->
       <div class="flex items-center gap-2">
