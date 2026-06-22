@@ -183,6 +183,165 @@
   </div>
 </div>
 
+<!-- Banner de onboarding (primeiros passos) -->
+{% if show_onboarding %}
+<div id="onboarding-banner" class="mb-6">
+  <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 relative overflow-hidden">
+
+    <!-- Blob decorativo interno -->
+    <div class="absolute -top-10 -right-10 w-48 h-48 bg-violet-600/5 rounded-full blur-2xl pointer-events-none"></div>
+
+    <!-- Cabeçalho + botão dispensar -->
+    <div class="flex items-start justify-between gap-4 mb-5">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-100">Primeiros Passos</h3>
+          <p class="text-xs text-gray-400 mt-0.5">Configure sua conta em 3 etapas simples</p>
+        </div>
+      </div>
+      <button type="button" id="onboarding-dismiss-btn"
+              class="text-gray-600 hover:text-gray-400 transition-colors duration-150 p-1 rounded-lg hover:bg-gray-800 flex-shrink-0"
+              title="Dispensar">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Barra de progresso -->
+    <div class="mb-5">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-xs text-gray-500">Progresso</span>
+        <span class="text-xs font-medium text-gray-400">{{ onboarding_steps_done }} de 3 etapas</span>
+      </div>
+      <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-violet-600 to-indigo-500 rounded-full transition-all duration-500"
+             style="width: {% widthratio onboarding_steps_done 3 100 %}%"></div>
+      </div>
+    </div>
+
+    <!-- Etapas -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+      <!-- Etapa 1: Conta bancária -->
+      <a href="{% url 'accounts:list' %}"
+         class="group flex items-start gap-3 p-4 rounded-lg border transition-all duration-200
+                {% if onboarding_has_accounts %}
+                  border-emerald-800/50 bg-emerald-900/10 hover:border-emerald-700/50
+                {% else %}
+                  border-gray-700 bg-gray-800/50 hover:border-violet-600/50 hover:bg-gray-800
+                {% endif %}">
+        <div class="flex-shrink-0 mt-0.5">
+          {% if onboarding_has_accounts %}
+            <div class="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+          {% else %}
+            <div class="w-5 h-5 rounded-full border-2 border-gray-600 group-hover:border-violet-500 flex items-center justify-center transition-colors duration-200">
+              <span class="text-xs font-bold text-gray-500 group-hover:text-violet-400 transition-colors duration-200">1</span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-medium {% if onboarding_has_accounts %}text-emerald-400{% else %}text-gray-100{% endif %}">
+            Criar uma conta
+          </p>
+          <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+            Cadastre seu banco, carteira ou investimento
+          </p>
+        </div>
+      </a>
+
+      <!-- Etapa 2: Categorias -->
+      <a href="{% url 'categories:list' %}"
+         class="group flex items-start gap-3 p-4 rounded-lg border transition-all duration-200
+                {% if onboarding_has_categories %}
+                  border-emerald-800/50 bg-emerald-900/10 hover:border-emerald-700/50
+                {% else %}
+                  border-gray-700 bg-gray-800/50 hover:border-violet-600/50 hover:bg-gray-800
+                {% endif %}">
+        <div class="flex-shrink-0 mt-0.5">
+          {% if onboarding_has_categories %}
+            <div class="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+          {% else %}
+            <div class="w-5 h-5 rounded-full border-2 border-gray-600 group-hover:border-violet-500 flex items-center justify-center transition-colors duration-200">
+              <span class="text-xs font-bold text-gray-500 group-hover:text-violet-400 transition-colors duration-200">2</span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-medium {% if onboarding_has_categories %}text-emerald-400{% else %}text-gray-100{% endif %}">
+            Definir categorias
+          </p>
+          <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+            Organize receitas e despesas por tipo
+          </p>
+        </div>
+      </a>
+
+      <!-- Etapa 3: Primeira transação -->
+      {% if onboarding_has_accounts and onboarding_has_categories %}
+        <button type="button" onclick="openTransactionModal()"
+                class="group flex items-start gap-3 p-4 rounded-lg border transition-all duration-200 w-full text-left
+                       {% if onboarding_has_transactions %}
+                         border-emerald-800/50 bg-emerald-900/10 hover:border-emerald-700/50
+                       {% else %}
+                         border-gray-700 bg-gray-800/50 hover:border-violet-600/50 hover:bg-gray-800
+                       {% endif %}">
+      {% else %}
+        <div class="group flex items-start gap-3 p-4 rounded-lg border border-gray-800 bg-gray-800/20 cursor-not-allowed opacity-50">
+      {% endif %}
+          <div class="flex-shrink-0 mt-0.5">
+            {% if onboarding_has_transactions %}
+              <div class="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+            {% else %}
+              <div class="w-5 h-5 rounded-full border-2 border-gray-600
+                          {% if onboarding_has_accounts and onboarding_has_categories %}group-hover:border-violet-500{% endif %}
+                          flex items-center justify-center transition-colors duration-200">
+                <span class="text-xs font-bold text-gray-500
+                             {% if onboarding_has_accounts and onboarding_has_categories %}group-hover:text-violet-400{% endif %}
+                             transition-colors duration-200">3</span>
+              </div>
+            {% endif %}
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm font-medium {% if onboarding_has_transactions %}text-emerald-400{% else %}text-gray-100{% endif %}">
+              Registrar transação
+            </p>
+            <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+              {% if not onboarding_has_accounts or not onboarding_has_categories %}
+                Conclua as etapas anteriores primeiro
+              {% else %}
+                Lance sua primeira receita ou despesa
+              {% endif %}
+            </p>
+          </div>
+      {% if onboarding_has_accounts and onboarding_has_categories %}
+        </button>
+      {% else %}
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endif %}
+
 <!-- Cabeçalho de métricas -->
 <div class="flex items-center justify-between mb-4">
   <h2 class="text-sm font-semibold text-gray-100">Visão Geral</h2>
@@ -435,6 +594,26 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+  // Onboarding banner: dismiss persistente via localStorage
+  (function () {
+    var banner = document.getElementById('onboarding-banner');
+    if (!banner) return;
+
+    if (localStorage.getItem('finanpy_onboarding_dismissed') === '1') {
+      banner.style.display = 'none';
+      return;
+    }
+
+    document.getElementById('onboarding-dismiss-btn').addEventListener('click', function () {
+      localStorage.setItem('finanpy_onboarding_dismissed', '1');
+      banner.style.transition = 'opacity 200ms ease, transform 200ms ease';
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateY(-4px)';
+      setTimeout(function () { banner.style.display = 'none'; }, 200);
+    });
+  }());
+</script>
 <script>
   (function () {
     var modal            = document.getElementById('tx-modal');

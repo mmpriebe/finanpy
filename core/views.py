@@ -80,11 +80,10 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             })
             return context
 
-        total_balance = (
-            Account.objects
-            .filter(user=user, is_active=True)
-            .aggregate(total=Sum('balance'))['total'] or 0
-        )
+        accounts_qs = Account.objects.filter(user=user, is_active=True)
+        categories_qs = Category.objects.filter(user=user, is_active=True)
+
+        total_balance = accounts_qs.aggregate(total=Sum('balance'))['total'] or 0
 
         monthly_income = (
             Transaction.objects
@@ -101,6 +100,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         recent_transactions = (
             Transaction.objects
             .filter(user=user)
+            .select_related('account', 'category')
             .order_by('-date', '-created_at')[:5]
         )
 
@@ -117,18 +117,32 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         if monthly_income > 0:
             savings_rate = max(0, min(100, int((1 - monthly_expenses / monthly_income) * 100)))
 
+        onboarding_has_accounts = accounts_qs.exists()
+        onboarding_has_categories = categories_qs.exists()
+        onboarding_has_transactions = Transaction.objects.filter(user=user).exists()
+        onboarding_steps_done = sum([
+            onboarding_has_accounts,
+            onboarding_has_categories,
+            onboarding_has_transactions,
+        ])
+
         context.update({
             'total_balance': total_balance,
             'monthly_income': monthly_income,
             'monthly_expenses': monthly_expenses,
             'monthly_balance': monthly_income - monthly_expenses,
             'recent_transactions': recent_transactions,
-            'accounts': Account.objects.filter(user=user, is_active=True),
-            'categories': Category.objects.filter(user=user, is_active=True),
+            'accounts': accounts_qs,
+            'categories': categories_qs,
             'greeting': _build_greeting(user),
             'current_month_label': f'{_PT_MONTHS[today.month - 1]} {today.year}',
             'savings_rate': savings_rate,
             'top_expense_categories': top_expense_categories,
             'top_expense_max': top_expense_max,
+            'show_onboarding': onboarding_steps_done < 3,
+            'onboarding_has_accounts': onboarding_has_accounts,
+            'onboarding_has_categories': onboarding_has_categories,
+            'onboarding_has_transactions': onboarding_has_transactions,
+            'onboarding_steps_done': onboarding_steps_done,
         })
         return context
