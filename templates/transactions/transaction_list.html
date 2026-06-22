@@ -592,8 +592,9 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
           </svg>
         </div>
-        <input type="search" name="q" placeholder="Buscar por descrição…"
+        <input type="text" name="q" placeholder="Buscar por descrição…"
                value="{{ current_q }}"
+               oninput="if(!this.value) this.form.submit()"
                class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg pl-9 pr-3 py-2
                       placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500
                       focus:border-transparent transition-all duration-200">
@@ -783,10 +784,12 @@
     </div>
     <p class="text-gray-100 font-medium mb-1">Nenhuma transação encontrada</p>
     <p class="text-gray-400 text-sm mb-6 max-w-xs">
-      {% if current_q %}
-        Nenhuma transação encontrada para "{{ current_q }}". Tente outro termo ou limpe os filtros.
+      {% if current_q and current_month or current_q and current_year or current_q and current_account or current_q and current_category %}
+        Nenhum resultado para "{{ current_q }}" com os filtros aplicados. Tente ampliar os critérios ou limpar os filtros.
+      {% elif current_q %}
+        Nenhuma transação encontrada para "{{ current_q }}". Tente outro termo ou verifique a grafia.
       {% elif current_month or current_year or current_account or current_category %}
-        Nenhuma transação corresponde aos filtros aplicados. Tente ajustar os critérios de busca ou limpar os filtros.
+        Nenhuma transação corresponde aos filtros aplicados. Tente ajustar os critérios ou limpar os filtros.
       {% else %}
         Registre sua primeira receita ou despesa para começar a acompanhar suas finanças.
       {% endif %}

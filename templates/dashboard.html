@@ -185,6 +185,7 @@
 
 <!-- Banner de onboarding (primeiros passos) -->
 {% if show_onboarding %}
+<script>if(localStorage.getItem('finanpy_onboarding_dismissed')==='1'){document.write('<style>#onboarding-banner{display:none}</style>');}</script>
 <div id="onboarding-banner" class="mb-6">
   <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 relative overflow-hidden">
 
