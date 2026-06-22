@@ -47,6 +47,10 @@ class TransactionListView(LoginRequiredMixin, ListView):
             except (ValueError, TypeError):
                 pass
 
+        q = self.request.GET.get('q', '').strip()
+        if q:
+            qs = qs.filter(description__icontains=q)
+
         return qs
 
     def get_context_data(self, **kwargs):
@@ -57,6 +61,7 @@ class TransactionListView(LoginRequiredMixin, ListView):
         context['current_year'] = self.request.GET.get('year', '')
         context['current_account'] = self.request.GET.get('account', '')
         context['current_category'] = self.request.GET.get('category', '')
+        context['current_q'] = self.request.GET.get('q', '')
         qs = self.get_queryset()
         context['income_count'] = qs.filter(transaction_type='income').count()
         context['expense_count'] = qs.filter(transaction_type='expense').count()

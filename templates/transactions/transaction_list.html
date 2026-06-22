@@ -467,6 +467,30 @@
 <!-- Barra de filtros -->
 <form method="get" action="{% url 'transactions:list' %}"
       class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-6">
+
+  <!-- Período rápido -->
+  <div class="flex flex-wrap items-center gap-2 mb-4 pb-4 border-b border-gray-800">
+    <span class="text-xs font-medium text-gray-400 uppercase tracking-wide mr-1">Período rápido:</span>
+    <button type="button" id="btn-este-mes"
+            onclick="setQuickPeriod('this_month')"
+            class="text-xs font-medium px-3 py-1.5 rounded-lg border transition-all duration-200
+                   bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-gray-100 border-gray-700">
+      Este mês
+    </button>
+    <button type="button" id="btn-mes-anterior"
+            onclick="setQuickPeriod('last_month')"
+            class="text-xs font-medium px-3 py-1.5 rounded-lg border transition-all duration-200
+                   bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-gray-100 border-gray-700">
+      Mês anterior
+    </button>
+    <button type="button" id="btn-este-ano"
+            onclick="setQuickPeriod('this_year')"
+            class="text-xs font-medium px-3 py-1.5 rounded-lg border transition-all duration-200
+                   bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-gray-100 border-gray-700">
+      Este ano
+    </button>
+  </div>
+
   <div class="flex flex-wrap items-end gap-3">
 
     <!-- Mês -->
@@ -552,6 +576,28 @@
           </option>
         {% endfor %}
       </select>
+    </div>
+
+    <!-- Busca por descrição -->
+    <div class="flex-1 min-w-[200px]">
+      <label class="flex items-center gap-1.5 text-xs font-medium text-gray-400 uppercase tracking-wide mb-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+        </svg>
+        Busca
+      </label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+          </svg>
+        </div>
+        <input type="search" name="q" placeholder="Buscar por descrição…"
+               value="{{ current_q }}"
+               class="w-full bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg pl-9 pr-3 py-2
+                      placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500
+                      focus:border-transparent transition-all duration-200">
+      </div>
     </div>
 
     <!-- Botões de ação -->
@@ -737,7 +783,9 @@
     </div>
     <p class="text-gray-100 font-medium mb-1">Nenhuma transação encontrada</p>
     <p class="text-gray-400 text-sm mb-6 max-w-xs">
-      {% if current_month or current_year or current_account or current_category %}
+      {% if current_q %}
+        Nenhuma transação encontrada para "{{ current_q }}". Tente outro termo ou limpe os filtros.
+      {% elif current_month or current_year or current_account or current_category %}
         Nenhuma transação corresponde aos filtros aplicados. Tente ajustar os critérios de busca ou limpar os filtros.
       {% else %}
         Registre sua primeira receita ou despesa para começar a acompanhar suas finanças.
@@ -757,6 +805,69 @@
 
 {% block extra_js %}
 <script>
+  /* ── Botões de período rápido ── */
+  (function () {
+    var now        = new Date();
+    var thisMonth  = now.getMonth() + 1;   // 1-based
+    var thisYear   = now.getFullYear();
+    var lastMonth  = thisMonth === 1 ? 12 : thisMonth - 1;
+    var lastYear   = thisMonth === 1 ? thisYear - 1 : thisYear;
+
+    // Valores do filtro atual vindos do Django
+    var currentMonth = '{{ current_month }}';
+    var currentYear  = '{{ current_year }}';
+
+    function highlightActive() {
+      var btnThisMonth  = document.getElementById('btn-este-mes');
+      var btnLastMonth  = document.getElementById('btn-mes-anterior');
+      var btnThisYear   = document.getElementById('btn-este-ano');
+
+      var activeClass   = ['bg-violet-600/20', 'border-violet-600/50', 'text-violet-400'];
+      var inactiveClass = ['bg-gray-800', 'hover:bg-gray-700', 'text-gray-300', 'hover:text-gray-100', 'border-gray-700'];
+
+      function setActive(btn, isActive) {
+        if (!btn) return;
+        if (isActive) {
+          inactiveClass.forEach(function (c) { btn.classList.remove(c); });
+          activeClass.forEach(function (c) { btn.classList.add(c); });
+        } else {
+          activeClass.forEach(function (c) { btn.classList.remove(c); });
+          inactiveClass.forEach(function (c) { btn.classList.add(c); });
+        }
+      }
+
+      var isThisMonth = currentMonth === String(thisMonth) && currentYear === String(thisYear);
+      var isLastMonth = currentMonth === String(lastMonth) && currentYear === String(lastYear);
+      var isThisYear  = currentMonth === '' && currentYear === String(thisYear);
+
+      setActive(btnThisMonth, isThisMonth);
+      setActive(btnLastMonth, isLastMonth);
+      setActive(btnThisYear, isThisYear);
+    }
+
+    function setQuickPeriod(period) {
+      var form        = document.querySelector('form[action]');
+      var monthSelect = form.querySelector('[name="month"]');
+      var yearInput   = form.querySelector('[name="year"]');
+
+      if (period === 'this_month') {
+        monthSelect.value = String(thisMonth);
+        yearInput.value   = String(thisYear);
+      } else if (period === 'last_month') {
+        monthSelect.value = String(lastMonth);
+        yearInput.value   = String(lastYear);
+      } else if (period === 'this_year') {
+        monthSelect.value = '';
+        yearInput.value   = String(thisYear);
+      }
+
+      form.submit();
+    }
+
+    highlightActive();
+    window.setQuickPeriod = setQuickPeriod;
+  }());
+
   /* ── Abas: Todas / Receitas / Despesas ── */
   (function () {
     var tabs = {

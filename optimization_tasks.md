@@ -174,12 +174,12 @@ Ordenadas por impacto e dependência. Cada tarefa inclui os arquivos afetados e 
 
 > Melhorias de experiência que aumentam retenção e usabilidade.
 
-- [ ] **UX-01** — Adicionar botões de período rápido nos filtros de transações
+- [x] **UX-01** — Adicionar botões de período rápido nos filtros de transações
   - Arquivo: `templates/transactions/transaction_list.html`
   - Adicionar: botões "Este mês", "Mês anterior", "Este ano" que preenchem os filtros via JavaScript
   - Esforço: 2h
 
-- [ ] **UX-02** — Implementar busca por descrição de transação
+- [x] **UX-02** — Implementar busca por descrição de transação
   - Arquivo: `transactions/views.py:TransactionListView.get_queryset`
   - Adicionar parâmetro `q` na query string: `qs.filter(description__icontains=q)`
   - Arquivo: `templates/transactions/transaction_list.html` — campo de busca no topo
