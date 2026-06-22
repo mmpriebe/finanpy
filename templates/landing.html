@@ -6,11 +6,31 @@
 
 <!-- Navbar fixa -->
 <nav class="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800">
-  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+  <div class="max-w-6xl mx-auto px-6 h-16 grid grid-cols-3 items-center">
+
+    <!-- Logo -->
     <span class="text-xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
       Finanpy
     </span>
-    <div class="flex items-center gap-3">
+
+    <!-- Links centrais (ocultos no mobile) -->
+    <div class="hidden md:flex items-center justify-center gap-7">
+      <a href="#"
+         class="text-sm text-gray-400 hover:text-gray-100 transition-colors duration-150">
+        Início
+      </a>
+      <a href="#funcionalidades"
+         class="text-sm text-gray-400 hover:text-gray-100 transition-colors duration-150">
+        Recursos
+      </a>
+      <a href="#como-funciona"
+         class="text-sm text-gray-400 hover:text-gray-100 transition-colors duration-150">
+        O que posso fazer
+      </a>
+    </div>
+
+    <!-- Botões de ação -->
+    <div class="flex items-center justify-end gap-3">
       <a href="{% url 'users:login' %}"
          class="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-gray-100
                 text-sm font-medium px-4 py-2 rounded-lg border border-gray-700 transition-all duration-200">
@@ -23,6 +43,7 @@
         Cadastre-se
       </a>
     </div>
+
   </div>
 </nav>
 
@@ -399,7 +420,7 @@
 </section>
 
 <!-- Seção Como funciona -->
-<section class="py-24 px-6 bg-gray-900/30">
+<section id="como-funciona" class="py-24 px-6 bg-gray-900/30">
   <div class="max-w-5xl mx-auto">
     <div class="text-center mb-14">
       <p class="text-xs font-medium text-violet-400 uppercase tracking-widest mb-3">Passo a passo</p>
