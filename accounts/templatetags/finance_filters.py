@@ -12,7 +12,10 @@ def by_type(queryset, transaction_type):
 
     Uso: {{ categories|by_type:'income' }}
     """
-    return [item for item in queryset if item.transaction_type == transaction_type]
+    try:
+        return queryset.filter(transaction_type=transaction_type)
+    except AttributeError:
+        return [item for item in queryset if item.transaction_type == transaction_type]
 
 
 @register.filter

@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def finance_globals(request):
     if not request.user.is_authenticated:
         return {}
@@ -11,4 +16,5 @@ def finance_globals(request):
             'greeting': _build_greeting(request.user),
         }
     except Exception:
+        logger.exception('Erro no context processor finance_globals')
         return {}

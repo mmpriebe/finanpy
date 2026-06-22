@@ -9,7 +9,7 @@ from .forms import LoginForm, RegisterForm
 class RegisterView(CreateView):
     form_class = RegisterForm
     template_name = 'users/register.html'
-    success_url = '/dashboard/'
+    success_url = reverse_lazy('dashboard')
 
     def form_valid(self, form):
         response = super().form_valid(form)

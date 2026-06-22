@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -9,6 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from categories.forms import CategoryForm
 from categories.models import Category
+from core.mixins import AjaxFormMixin
 
 
 class CategoryListView(LoginRequiredMixin, ListView):
@@ -20,35 +20,23 @@ class CategoryListView(LoginRequiredMixin, ListView):
         return Category.objects.filter(user=self.request.user)
 
 
-class CategoryCreateView(LoginRequiredMixin, CreateView):
+class CategoryCreateView(AjaxFormMixin, LoginRequiredMixin, CreateView):
     form_class = CategoryForm
     template_name = 'categories/category_form.html'
     success_url = reverse_lazy('categories:list')
-
-    def _is_ajax(self):
-        return self.request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
         if self._is_ajax():
             form.save()
-            messages.success(self.request, 'Categoria criada com sucesso!')
-            return JsonResponse({'success': True})
+            return self.ajax_success('Categoria criada com sucesso!')
         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        if self._is_ajax():
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
-        return super().form_invalid(form)
 
-
-class CategoryUpdateView(LoginRequiredMixin, UpdateView):
+class CategoryUpdateView(AjaxFormMixin, LoginRequiredMixin, UpdateView):
     form_class = CategoryForm
     template_name = 'categories/category_form.html'
     success_url = reverse_lazy('categories:list')
-
-    def _is_ajax(self):
-        return self.request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
     def get_queryset(self):
         return Category.objects.filter(user=self.request.user)
@@ -56,14 +44,8 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         if self._is_ajax():
             form.save()
-            messages.success(self.request, 'Categoria atualizada com sucesso!')
-            return JsonResponse({'success': True})
+            return self.ajax_success('Categoria atualizada com sucesso!')
         return super().form_valid(form)
-
-    def form_invalid(self, form):
-        if self._is_ajax():
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
-        return super().form_invalid(form)
 
 
 class CategoryToggleView(LoginRequiredMixin, View):

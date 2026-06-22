@@ -2,13 +2,10 @@ from django import forms
 
 from accounts.models import Account
 from categories.models import Category
+from core.forms import INPUT_CLASS
 from transactions.models import Transaction
 
-INPUT_CLASS = (
-    'bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg '
-    'px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 '
-    'focus:border-transparent transition-all duration-200 w-full'
-)
+_INPUT_CLASS = f'{INPUT_CLASS} w-full'
 
 
 class TransactionForm(forms.ModelForm):
@@ -25,7 +22,7 @@ class TransactionForm(forms.ModelForm):
             )
 
         for field in self.fields.values():
-            field.widget.attrs['class'] = INPUT_CLASS
+            field.widget.attrs['class'] = _INPUT_CLASS
 
     class Meta:
         model = Transaction

@@ -6,6 +6,7 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from accounts.models import Account
 from categories.models import Category
+from core.mixins import AjaxFormMixin
 from transactions.forms import TransactionForm
 from transactions.models import Transaction
 
@@ -62,19 +63,16 @@ class TransactionListView(LoginRequiredMixin, ListView):
         context['current_account'] = self.request.GET.get('account', '')
         context['current_category'] = self.request.GET.get('category', '')
         context['current_q'] = self.request.GET.get('q', '')
-        qs = self.get_queryset()
+        qs = self.object_list
         context['income_count'] = qs.filter(transaction_type='income').count()
         context['expense_count'] = qs.filter(transaction_type='expense').count()
         return context
 
 
-class TransactionCreateView(LoginRequiredMixin, CreateView):
+class TransactionCreateView(AjaxFormMixin, LoginRequiredMixin, CreateView):
     form_class = TransactionForm
     template_name = 'transactions/transaction_form.html'
     success_url = reverse_lazy('transactions:list')
-
-    def _is_ajax(self):
-        return self.request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -85,23 +83,14 @@ class TransactionCreateView(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
         if self._is_ajax():
             form.save()
-            messages.success(self.request, 'Transação criada com sucesso!')
-            return JsonResponse({'success': True})
+            return self.ajax_success('Transação criada com sucesso!')
         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        if self._is_ajax():
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
-        return super().form_invalid(form)
 
-
-class TransactionUpdateView(LoginRequiredMixin, UpdateView):
+class TransactionUpdateView(AjaxFormMixin, LoginRequiredMixin, UpdateView):
     form_class = TransactionForm
     template_name = 'transactions/transaction_form.html'
     success_url = reverse_lazy('transactions:list')
-
-    def _is_ajax(self):
-        return self.request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
@@ -114,14 +103,8 @@ class TransactionUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         if self._is_ajax():
             form.save()
-            messages.success(self.request, 'Transação atualizada com sucesso!')
-            return JsonResponse({'success': True})
+            return self.ajax_success('Transação atualizada com sucesso!')
         return super().form_valid(form)
-
-    def form_invalid(self, form):
-        if self._is_ajax():
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
-        return super().form_invalid(form)
 
 
 class TransactionDeleteView(LoginRequiredMixin, DeleteView):
@@ -133,7 +116,6 @@ class TransactionDeleteView(LoginRequiredMixin, DeleteView):
         return Transaction.objects.filter(user=self.request.user)
 
     def form_valid(self, form):
-        self.object = self.get_object()
         self.object.delete()
         messages.success(self.request, 'Transação excluída com sucesso.')
         if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':

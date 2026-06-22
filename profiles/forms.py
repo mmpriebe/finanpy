@@ -1,15 +1,10 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
+from core.forms import INPUT_CLASS_PROFILE
 from profiles.models import UserProfile
 
 User = get_user_model()
-
-_INPUT = (
-    'bg-gray-800 border border-gray-700 text-gray-100 text-sm rounded-lg '
-    'px-3 py-2.5 w-full placeholder-gray-600 focus:outline-none '
-    'focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200'
-)
 
 
 class UserNameForm(forms.ModelForm):
@@ -17,8 +12,8 @@ class UserNameForm(forms.ModelForm):
         model = User
         fields = ['first_name', 'last_name']
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': _INPUT}),
-            'last_name':  forms.TextInput(attrs={'class': _INPUT}),
+            'first_name': forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE}),
+            'last_name':  forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE}),
         }
 
 
@@ -27,7 +22,7 @@ class ProfilePersonalForm(forms.ModelForm):
         model = UserProfile
         fields = ['phone']
         widgets = {
-            'phone': forms.TextInput(attrs={'class': _INPUT, 'placeholder': '(00) 00000-0000'}),
+            'phone': forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE, 'placeholder': '(00) 00000-0000'}),
         }
 
 
@@ -36,11 +31,11 @@ class ProfileAddressForm(forms.ModelForm):
         model = UserProfile
         fields = ['zip_code', 'street', 'number', 'complement', 'neighborhood', 'city', 'state']
         widgets = {
-            'zip_code':     forms.TextInput(attrs={'class': _INPUT, 'placeholder': '00000-000'}),
-            'street':       forms.TextInput(attrs={'class': _INPUT, 'placeholder': 'Nome da rua'}),
-            'number':       forms.TextInput(attrs={'class': _INPUT, 'placeholder': 'Nº'}),
-            'complement':   forms.TextInput(attrs={'class': _INPUT, 'placeholder': 'Apto, bloco…'}),
-            'neighborhood': forms.TextInput(attrs={'class': _INPUT, 'placeholder': 'Bairro'}),
-            'city':         forms.TextInput(attrs={'class': _INPUT, 'placeholder': 'Cidade'}),
-            'state':        forms.TextInput(attrs={'class': _INPUT, 'placeholder': 'UF', 'maxlength': '2'}),
+            'zip_code':     forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE, 'placeholder': '00000-000'}),
+            'street':       forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE, 'placeholder': 'Nome da rua'}),
+            'number':       forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE, 'placeholder': 'Nº'}),
+            'complement':   forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE, 'placeholder': 'Apto, bloco…'}),
+            'neighborhood': forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE, 'placeholder': 'Bairro'}),
+            'city':         forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE, 'placeholder': 'Cidade'}),
+            'state':        forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE, 'placeholder': 'UF', 'maxlength': '2'}),
         }

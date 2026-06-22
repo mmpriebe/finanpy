@@ -37,52 +37,52 @@ Ordenadas por impacto e dependência. Cada tarefa inclui os arquivos afetados e 
 
 ### Qualidade de código
 
-- [ ] **COD-01** — Centralizar constante de input CSS
+- [x] **COD-01** — Centralizar constante de input CSS
   - Criar: `core/forms.py` com `INPUT_CLASS = '...'`
   - Remover duplicatas de: `accounts/forms.py`, `categories/forms.py`, `profiles/forms.py`, `transactions/forms.py`
   - Esforço: 30 min
 
-- [ ] **COD-02** — Criar `AjaxFormMixin` para eliminar duplicação de AJAX handling
+- [x] **COD-02** — Criar `AjaxFormMixin` para eliminar duplicação de AJAX handling
   - Criar: `core/mixins.py` com `AjaxFormMixin` implementando `_is_ajax()`, `form_valid`, `form_invalid`
   - Atualizar: `accounts/views.py`, `categories/views.py`, `transactions/views.py`
   - Esforço: 1h
 
-- [ ] **COD-03** — Corrigir dupla chamada de `get_queryset()` em `TransactionListView`
+- [x] **COD-03** — Corrigir dupla chamada de `get_queryset()` em `TransactionListView`
   - Arquivo: `transactions/views.py:60`
   - Mudança: substituir `self.get_queryset()` por `self.object_list` em `get_context_data`
   - Esforço: 15 min
 
-- [ ] **COD-04** — Corrigir dupla chamada de `get_queryset()` em `AccountListView`
+- [x] **COD-04** — Corrigir dupla chamada de `get_queryset()` em `AccountListView`
   - Arquivo: `accounts/views.py:25`
   - Mudança: substituir `self.get_queryset()` por `self.object_list` em `get_context_data`
   - Esforço: 15 min
 
-- [ ] **COD-05** — Remover `greeting` duplicado do `DashboardView`
+- [x] **COD-05** — Remover `greeting` duplicado do `DashboardView`
   - Arquivo: `core/views.py:128`
   - Mudança: remover `'greeting': _build_greeting(user)` — já injetado pelo context processor
   - Esforço: 5 min
 
-- [ ] **COD-06** — Corrigir `success_url` hardcoded no `RegisterView`
+- [x] **COD-06** — Corrigir `success_url` hardcoded no `RegisterView`
   - Arquivo: `users/views.py:12`
   - Mudança: `success_url = reverse_lazy('dashboard')`
   - Esforço: 5 min
 
-- [ ] **COD-07** — Adicionar logging no context processor
+- [x] **COD-07** — Adicionar logging no context processor
   - Arquivo: `core/context_processors.py:12`
   - Mudança: substituir `except Exception: return {}` por log em nível WARNING
   - Esforço: 10 min
 
-- [ ] **COD-08** — Corrigir query dupla em `TransactionDeleteView.form_valid`
+- [x] **COD-08** — Corrigir query dupla em `TransactionDeleteView.form_valid`
   - Arquivo: `transactions/views.py:131`
   - Mudança: remover `self.object = self.get_object()` — `self.object` já está populado pelo Django
   - Esforço: 5 min
 
-- [ ] **COD-09** — Corrigir filtro `by_type` para usar queryset em vez de iteração Python
+- [x] **COD-09** — Corrigir filtro `by_type` para usar queryset em vez de iteração Python
   - Arquivo: `accounts/templatetags/finance_filters.py:15`
   - Mudança: usar `.filter(transaction_type=transaction_type)` quando possível
   - Esforço: 15 min
 
-- [ ] **COD-10** — Padronizar registro dos apps em `INSTALLED_APPS` com `AppConfig`
+- [x] **COD-10** — Padronizar registro dos apps em `INSTALLED_APPS` com `AppConfig`
   - Arquivo: `core/settings.py:42-47`
   - Mudança: registrar `accounts`, `categories`, `transactions`, `users` com sua `AppConfig` explícita
   - Esforço: 30 min

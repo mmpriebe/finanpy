@@ -39,11 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
 
-    'accounts',
-    'categories',
+    'accounts.apps.AccountsConfig',
+    'categories.apps.CategoriesConfig',
     'profiles.apps.ProfilesConfig',
-    'transactions', 
-    'users',
+    'transactions.apps.TransactionsConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
