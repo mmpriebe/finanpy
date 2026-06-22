@@ -172,40 +172,67 @@
   </div>
 </section>
 
-<!-- Seção de métricas / social proof -->
-<section class="bg-gray-900/50 border-y border-gray-800 py-12 px-6">
-  <div class="max-w-4xl mx-auto">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+<!-- Segunda dobra — benefícios em destaque -->
+<section class="relative border-y border-gray-800 py-16 px-6 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none"
+       style="background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(109,40,217,0.07) 0%, transparent 70%);"></div>
 
-      <div class="flex flex-col items-center gap-1">
-        <p class="text-3xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
-          Controle total
-        </p>
-        <p class="text-sm text-gray-400">das suas contas</p>
+  <div class="relative max-w-5xl mx-auto">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-px bg-gray-800 rounded-2xl overflow-hidden shadow-xl shadow-black/30">
+
+      <!-- Item 1 -->
+      <div class="bg-gray-900 px-8 py-10 flex flex-col items-center text-center gap-4 group hover:bg-gray-800/60 transition-colors duration-200">
+        <div class="w-12 h-12 rounded-xl bg-violet-600/15 flex items-center justify-center group-hover:bg-violet-600/25 transition-colors duration-200">
+          <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-2xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent mb-1">
+            Múltiplas contas
+          </p>
+          <p class="text-sm text-gray-400 leading-relaxed">
+            Centralize poupança, corrente e carteiras digitais num único painel.
+          </p>
+        </div>
       </div>
 
-      <!-- Separador (visível apenas em sm+) -->
-      <div class="hidden sm:flex flex-col items-center gap-1 relative">
-        <div class="absolute left-0 top-0 bottom-0 w-px bg-gray-800"></div>
-        <div class="absolute right-0 top-0 bottom-0 w-px bg-gray-800"></div>
-        <p class="text-3xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
-          Histórico completo
-        </p>
-        <p class="text-sm text-gray-400">de transações</p>
+      <!-- Item 2 -->
+      <div class="bg-gray-900 px-8 py-10 flex flex-col items-center text-center gap-4 group hover:bg-gray-800/60 transition-colors duration-200">
+        <div class="w-12 h-12 rounded-xl bg-emerald-600/15 flex items-center justify-center group-hover:bg-emerald-600/25 transition-colors duration-200">
+          <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-1">
+            Visão mensal
+          </p>
+          <p class="text-sm text-gray-400 leading-relaxed">
+            Receitas, despesas e saldo do mês sempre atualizados no dashboard.
+          </p>
+        </div>
       </div>
 
-      <div class="sm:hidden flex flex-col items-center gap-1">
-        <p class="text-3xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
-          Histórico completo
-        </p>
-        <p class="text-sm text-gray-400">de transações</p>
-      </div>
-
-      <div class="flex flex-col items-center gap-1">
-        <p class="text-3xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
-          Categorias
-        </p>
-        <p class="text-sm text-gray-400">personalizadas</p>
+      <!-- Item 3 -->
+      <div class="bg-gray-900 px-8 py-10 flex flex-col items-center text-center gap-4 group hover:bg-gray-800/60 transition-colors duration-200">
+        <div class="w-12 h-12 rounded-xl bg-indigo-600/15 flex items-center justify-center group-hover:bg-indigo-600/25 transition-colors duration-200">
+          <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent mb-1">
+            Categorias livres
+          </p>
+          <p class="text-sm text-gray-400 leading-relaxed">
+            Crie e nomeie categorias do seu jeito — sem rótulos genéricos impostos.
+          </p>
+        </div>
       </div>
 
     </div>
