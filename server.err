@@ -1,0 +1,40 @@
+[22/Jun/2026 19:59:01] "GET / HTTP/1.1" 200 24014
+Not Found: /entrar/
+[22/Jun/2026 19:59:12] "GET /entrar/ HTTP/1.1" 404 4280
+[22/Jun/2026 19:59:14] "GET /transacoes/ HTTP/1.1" 302 0
+[22/Jun/2026 19:59:22] "GET /login/ HTTP/1.1" 200 12290
+[22/Jun/2026 19:59:24] "GET /transacoes/ HTTP/1.1" 302 0
+[22/Jun/2026 19:59:24] "GET /login/?next=/transacoes/ HTTP/1.1" 200 12290
+[22/Jun/2026 19:59:31] "GET /login/ HTTP/1.1" 200 12290
+[22/Jun/2026 19:59:31] "POST /login/ HTTP/1.1" 200 12393
+[22/Jun/2026 19:59:31,598] - Broken pipe from ('127.0.0.1', 51042)
+[22/Jun/2026 19:59:41] "GET /cadastro/ HTTP/1.1" 200 5799
+[22/Jun/2026 19:59:41] "POST /cadastro/ HTTP/1.1" 302 0
+[22/Jun/2026 19:59:41] "GET /dashboard/ HTTP/1.1" 200 58046
+[22/Jun/2026 19:59:42,015] - Broken pipe from ('127.0.0.1', 51044)
+[22/Jun/2026 19:59:56] "GET /dashboard/ HTTP/1.1" 302 0
+[22/Jun/2026 19:59:56] "GET /login/?next=/dashboard/ HTTP/1.1" 200 12290
+[22/Jun/2026 19:59:56,600] - Broken pipe from ('127.0.0.1', 51046)
+[22/Jun/2026 20:00:22] "GET /cadastro/ HTTP/1.1" 200 5799
+[22/Jun/2026 20:00:22] "POST /cadastro/ HTTP/1.1" 200 5973
+[22/Jun/2026 20:00:22,303] - Broken pipe from ('127.0.0.1', 5054)
+[22/Jun/2026 20:00:34] "GET /cadastro/ HTTP/1.1" 200 5799
+[22/Jun/2026 20:00:34] "POST /cadastro/ HTTP/1.1" 302 0
+[22/Jun/2026 20:00:34] "GET /dashboard/ HTTP/1.1" 200 58046
+[22/Jun/2026 20:00:34,591] - Broken pipe from ('127.0.0.1', 1433)
+[22/Jun/2026 20:01:06] "GET /cadastro/ HTTP/1.1" 200 5799
+[22/Jun/2026 20:01:06] "POST /cadastro/ HTTP/1.1" 302 0
+[22/Jun/2026 20:01:06] "GET /dashboard/ HTTP/1.1" 200 58048
+[22/Jun/2026 20:01:06,868] - Broken pipe from ('127.0.0.1', 52256)
+[22/Jun/2026 20:01:43] "GET /cadastro/ HTTP/1.1" 200 5799
+[22/Jun/2026 20:01:43] "POST /cadastro/ HTTP/1.1" 302 0
+[22/Jun/2026 20:01:43] "GET /dashboard/ HTTP/1.1" 200 58048
+[22/Jun/2026 20:01:43,524] - Broken pipe from ('127.0.0.1', 50579)
+[22/Jun/2026 20:01:57] "GET /cadastro/ HTTP/1.1" 200 5799
+[22/Jun/2026 20:01:57] "POST /cadastro/ HTTP/1.1" 302 0
+[22/Jun/2026 20:01:57] "GET /dashboard/ HTTP/1.1" 200 58048
+[22/Jun/2026 20:01:57,613] - Broken pipe from ('127.0.0.1', 59770)
+[22/Jun/2026 20:02:05] "GET /cadastro/ HTTP/1.1" 200 5799
+[22/Jun/2026 20:02:06] "POST /cadastro/ HTTP/1.1" 302 0
+[22/Jun/2026 20:02:06] "GET /dashboard/ HTTP/1.1" 200 58048
+[22/Jun/2026 20:02:06,178] - Broken pipe from ('127.0.0.1', 8772)

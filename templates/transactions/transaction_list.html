@@ -465,7 +465,7 @@
 </div>
 
 <!-- Barra de filtros -->
-<form method="get" action="{% url 'transactions:list' %}"
+<form id="filter-form" method="get" action="{% url 'transactions:list' %}"
       class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-6">
 
   <!-- Período rápido -->
@@ -849,7 +849,7 @@
     }
 
     function setQuickPeriod(period) {
-      var form        = document.querySelector('form[action]');
+      var form        = document.getElementById('filter-form');
       var monthSelect = form.querySelector('[name="month"]');
       var yearInput   = form.querySelector('[name="year"]');
 
