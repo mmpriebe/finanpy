@@ -421,67 +421,212 @@
 </section>
 
 <!-- Seção Como funciona -->
-<section id="como-funciona" class="py-24 px-6 bg-gray-900/30">
-  <div class="max-w-5xl mx-auto">
-    <div class="text-center mb-14">
+<style>
+  @keyframes fp-step-in {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+  @keyframes fp-line-flow {
+    0%   { background-position: -100% 0; }
+    100% { background-position: 200%  0; }
+  }
+  .fp-s1 { animation: fp-step-in .6s ease-out .05s both; }
+  .fp-s2 { animation: fp-step-in .6s ease-out .22s both; }
+  .fp-s3 { animation: fp-step-in .6s ease-out .39s both; }
+  .fp-connector {
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(139,92,246,.55) 30%,
+      rgba(99,102,241,.55) 70%,
+      transparent 100%);
+    background-size: 200% 100%;
+    animation: fp-line-flow 2.8s linear infinite;
+  }
+</style>
+
+<section id="como-funciona" class="relative py-24 px-6 overflow-hidden bg-gray-900/30">
+  <!-- Orb de fundo -->
+  <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+    <div class="w-[700px] h-[280px] bg-violet-600/5 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="relative max-w-5xl mx-auto">
+
+    <!-- Cabeçalho -->
+    <div class="text-center mb-16">
       <p class="text-xs font-medium text-violet-400 uppercase tracking-widest mb-3">Passo a passo</p>
-      <h2 class="text-3xl font-bold text-gray-100 mb-4">Como funciona</h2>
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-100 mb-4">Como funciona</h2>
       <p class="text-gray-400 max-w-lg mx-auto text-sm leading-relaxed">
-        Em três passos simples você já tem controle total das suas finanças.
+        Três passos simples separam você de um controle financeiro completo.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+    <!-- Grid de cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 relative">
 
-      <!-- Linha conectora entre passos (visível apenas em md+) -->
-      <div class="hidden md:block absolute top-8 left-1/3 right-1/3 h-px bg-gradient-to-r from-violet-600/40 to-indigo-600/40"
-           style="transform: translateX(0);"></div>
+      <!-- Conector animado entre os cards (desktop) -->
+      <div class="hidden md:block absolute h-px fp-connector pointer-events-none"
+           style="top: 52px; left: calc(33.333% + 20px); right: calc(33.333% + 20px);"></div>
 
-      <!-- Passo 1 -->
-      <div class="flex flex-col items-center text-center px-4">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center mb-5 shadow-lg shadow-violet-900/40 relative z-10">
-          <span class="text-xl font-bold text-white">1</span>
+      <!-- ── Passo 1 ── -->
+      <div class="fp-s1 relative bg-gray-900 border border-gray-800 rounded-2xl p-7
+                  hover:border-violet-700/60 hover:-translate-y-1.5 transition-all duration-300 group overflow-hidden">
+        <!-- Número decorativo de fundo -->
+        <span class="absolute -top-2 -right-1 text-[7rem] font-black leading-none select-none
+                     text-gray-800/60 group-hover:text-violet-900/50 transition-colors duration-300">
+          01
+        </span>
+
+        <div class="relative">
+          <!-- Ícone + label -->
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600
+                        flex items-center justify-center shadow-lg shadow-violet-900/40 shrink-0">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
+              </svg>
+            </div>
+            <span class="text-xs font-semibold text-violet-400 uppercase tracking-widest">Passo 1</span>
+          </div>
+
+          <h3 class="text-lg font-bold text-gray-100 mb-2">Crie sua conta</h3>
+          <p class="text-sm text-gray-400 leading-relaxed mb-6">
+            Cadastro rápido com e-mail e senha. Sem formulários longos, sem dados de cartão.
+          </p>
+
+          <ul class="space-y-2.5 mb-6">
+            <li class="flex items-center gap-2 text-xs text-gray-400">
+              <svg class="w-3.5 h-3.5 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Cadastro em menos de 1 minuto
+            </li>
+            <li class="flex items-center gap-2 text-xs text-gray-400">
+              <svg class="w-3.5 h-3.5 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Sem dados pessoais excessivos
+            </li>
+            <li class="flex items-center gap-2 text-xs text-gray-400">
+              <svg class="w-3.5 h-3.5 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Acesso imediato após o cadastro
+            </li>
+          </ul>
+
+          <div class="inline-flex items-center gap-1.5 bg-violet-600/10 border border-violet-600/20 rounded-full px-3 py-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span>
+            <span class="text-xs text-violet-300">Painel liberado na hora</span>
+          </div>
         </div>
-        <h3 class="text-base font-semibold text-gray-100 mb-2">Crie sua conta</h3>
-        <p class="text-sm text-gray-400 leading-relaxed">
-          Cadastro simples com e-mail e senha. Sem formulários longos, sem complicações.
-        </p>
       </div>
 
-      <!-- Seta decorativa mobile entre passos 1 e 2 -->
-      <div class="md:hidden flex justify-center -my-2">
-        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/>
-        </svg>
-      </div>
+      <!-- ── Passo 2 ── -->
+      <div class="fp-s2 relative bg-gray-900 border border-gray-800 rounded-2xl p-7
+                  hover:border-indigo-700/60 hover:-translate-y-1.5 transition-all duration-300 group overflow-hidden">
+        <span class="absolute -top-2 -right-1 text-[7rem] font-black leading-none select-none
+                     text-gray-800/60 group-hover:text-indigo-900/50 transition-colors duration-300">
+          02
+        </span>
 
-      <!-- Passo 2 -->
-      <div class="flex flex-col items-center text-center px-4">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center mb-5 shadow-lg shadow-violet-900/40 relative z-10">
-          <span class="text-xl font-bold text-white">2</span>
+        <div class="relative">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600
+                        flex items-center justify-center shadow-lg shadow-indigo-900/40 shrink-0">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>
+              </svg>
+            </div>
+            <span class="text-xs font-semibold text-indigo-400 uppercase tracking-widest">Passo 2</span>
+          </div>
+
+          <h3 class="text-lg font-bold text-gray-100 mb-2">Configure suas finanças</h3>
+          <p class="text-sm text-gray-400 leading-relaxed mb-6">
+            Adicione suas contas bancárias e crie categorias personalizadas de receita e despesa.
+          </p>
+
+          <ul class="space-y-2.5 mb-6">
+            <li class="flex items-center gap-2 text-xs text-gray-400">
+              <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Várias contas num só painel
+            </li>
+            <li class="flex items-center gap-2 text-xs text-gray-400">
+              <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Categorias com nomes livres
+            </li>
+            <li class="flex items-center gap-2 text-xs text-gray-400">
+              <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Separação entre receita e despesa
+            </li>
+          </ul>
+
+          <div class="inline-flex items-center gap-1.5 bg-indigo-600/10 border border-indigo-600/20 rounded-full px-3 py-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+            <span class="text-xs text-indigo-300">Saldo calculado automaticamente</span>
+          </div>
         </div>
-        <h3 class="text-base font-semibold text-gray-100 mb-2">Adicione suas contas</h3>
-        <p class="text-sm text-gray-400 leading-relaxed">
-          Registre suas contas bancárias e crie categorias personalizadas de receita e despesa.
-        </p>
       </div>
 
-      <!-- Seta decorativa mobile entre passos 2 e 3 -->
-      <div class="md:hidden flex justify-center -my-2">
-        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/>
-        </svg>
-      </div>
+      <!-- ── Passo 3 ── -->
+      <div class="fp-s3 relative bg-gray-900 border border-gray-800 rounded-2xl p-7
+                  hover:border-emerald-700/60 hover:-translate-y-1.5 transition-all duration-300 group overflow-hidden">
+        <span class="absolute -top-2 -right-1 text-[7rem] font-black leading-none select-none
+                     text-gray-800/60 group-hover:text-emerald-900/50 transition-colors duration-300">
+          03
+        </span>
 
-      <!-- Passo 3 -->
-      <div class="flex flex-col items-center text-center px-4">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center mb-5 shadow-lg shadow-violet-900/40 relative z-10">
-          <span class="text-xl font-bold text-white">3</span>
+        <div class="relative">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-500
+                        flex items-center justify-center shadow-lg shadow-emerald-900/40 shrink-0">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/>
+              </svg>
+            </div>
+            <span class="text-xs font-semibold text-emerald-400 uppercase tracking-widest">Passo 3</span>
+          </div>
+
+          <h3 class="text-lg font-bold text-gray-100 mb-2">Acompanhe tudo</h3>
+          <p class="text-sm text-gray-400 leading-relaxed mb-6">
+            Lance receitas e despesas e veja o dashboard atualizado em tempo real.
+          </p>
+
+          <ul class="space-y-2.5 mb-6">
+            <li class="flex items-center gap-2 text-xs text-gray-400">
+              <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Saldo total por conta
+            </li>
+            <li class="flex items-center gap-2 text-xs text-gray-400">
+              <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Receitas e despesas do mês
+            </li>
+            <li class="flex items-center gap-2 text-xs text-gray-400">
+              <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              Histórico com filtros por período
+            </li>
+          </ul>
+
+          <div class="inline-flex items-center gap-1.5 bg-emerald-600/10 border border-emerald-600/20 rounded-full px-3 py-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs text-emerald-300">Controle financeiro completo</span>
+          </div>
         </div>
-        <h3 class="text-base font-semibold text-gray-100 mb-2">Acompanhe tudo</h3>
-        <p class="text-sm text-gray-400 leading-relaxed">
-          Veja o dashboard com saldo total, receitas e despesas do mês — sempre atualizado.
-        </p>
       </div>
 
     </div>
