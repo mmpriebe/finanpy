@@ -5,3 +5,4 @@
 - [Sprint 5 — Accounts App](project_sprint5_accounts.md) — Account model/admin/form/views/URLs done; toggle uses base View; mounted at contas/; 0 system-check issues
 - [Sprint 6 — Categories App](project_sprint6_categories.md) — Category model/admin/form/views/URLs done; unique_together (user,name,type); mounted at categorias/; 0 system-check issues
 - [Sprint 7 — Transactions App](project_sprint7_transactions.md) — Transaction model/admin/form/views/URLs done; FKs to Account+Category with PROTECT; mounted at transacoes/; 0 system-check issues
+- [Sprint 3 — Auth Security](project_sprint3_auth.md) — Password reset URLs/email config, PasswordChangeView in profiles, django-axes rate limiting, phone RegexValidator, DeleteViews with ProtectedError handling

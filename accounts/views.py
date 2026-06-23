@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models.deletion import ProtectedError
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from accounts.forms import AccountForm
 from accounts.models import Account
@@ -68,3 +69,22 @@ class AccountToggleView(LoginRequiredMixin, View):
         account.save()
         messages.success(request, 'Status da conta atualizado.')
         return redirect('accounts:list')
+
+
+class AccountDeleteView(LoginRequiredMixin, DeleteView):
+    model = Account
+    template_name = 'accounts/account_confirm_delete.html'
+    success_url = reverse_lazy('accounts:list')
+
+    def get_queryset(self):
+        return Account.objects.filter(user=self.request.user)
+
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        except ProtectedError:
+            messages.error(
+                self.request,
+                'Esta conta não pode ser excluída pois possui transações vinculadas.',
+            )
+            return redirect('accounts:list')

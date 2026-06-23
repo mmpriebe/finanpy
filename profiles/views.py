@@ -1,6 +1,10 @@
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import PasswordChangeView as DjangoPasswordChangeView
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import DetailView
 
@@ -65,3 +69,13 @@ class ProfileUpdateView(LoginRequiredMixin, View):
             return JsonResponse({'success': False, 'errors': {k: list(v) for k, v in address_form.errors.items()}}, status=400)
 
         return JsonResponse({'success': False, 'errors': {'__all__': ['Tab inválida.']}}, status=400)
+
+
+class PasswordChangeView(LoginRequiredMixin, DjangoPasswordChangeView):
+    template_name = 'profiles/password_change.html'
+    success_url = reverse_lazy('profile-detail')
+
+    def form_valid(self, response):
+        messages.success(self.request, 'Senha alterada com sucesso.')
+        update_session_auth_hash(self.request, self.request.user)
+        return super().form_valid(response)

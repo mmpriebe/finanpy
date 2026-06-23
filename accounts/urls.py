@@ -2,6 +2,7 @@ from django.urls import path
 
 from accounts.views import (
     AccountCreateView,
+    AccountDeleteView,
     AccountListView,
     AccountToggleView,
     AccountUpdateView,
@@ -14,4 +15,5 @@ urlpatterns = [
     path('nova/', AccountCreateView.as_view(), name='create'),
     path('<int:pk>/editar/', AccountUpdateView.as_view(), name='update'),
     path('<int:pk>/toggle/', AccountToggleView.as_view(), name='toggle'),
+    path('<int:pk>/excluir/', AccountDeleteView.as_view(), name='delete'),
 ]

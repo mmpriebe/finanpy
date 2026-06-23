@@ -1,10 +1,16 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator
 
 from core.forms import INPUT_CLASS_PROFILE
 from profiles.models import UserProfile
 
 User = get_user_model()
+
+_phone_validator = RegexValidator(
+    regex=r'^\(\d{2}\) \d{4,5}-\d{4}$',
+    message='Informe um telefone válido no formato (00) 00000-0000.',
+)
 
 
 class UserNameForm(forms.ModelForm):
@@ -18,12 +24,18 @@ class UserNameForm(forms.ModelForm):
 
 
 class ProfilePersonalForm(forms.ModelForm):
+    phone = forms.CharField(
+        required=False,
+        validators=[_phone_validator],
+        widget=forms.TextInput(attrs={
+            'class': INPUT_CLASS_PROFILE,
+            'placeholder': '(00) 00000-0000',
+        }),
+    )
+
     class Meta:
         model = UserProfile
         fields = ['phone']
-        widgets = {
-            'phone': forms.TextInput(attrs={'class': INPUT_CLASS_PROFILE, 'placeholder': '(00) 00000-0000'}),
-        }
 
 
 class ProfileAddressForm(forms.ModelForm):

@@ -133,37 +133,37 @@ Ordenadas por impacto e dependência. Cada tarefa inclui os arquivos afetados e 
 
 > Funcionalidades de segurança ausentes que bloqueiam uso em produção.
 
-- [ ] **AUTH-01** — Implementar recuperação de senha
+- [x] **AUTH-01** — Implementar recuperação de senha
   - Arquivo: `users/urls.py`
   - Adicionar 4 URLs padrão do Django Auth (`PasswordResetView`, `PasswordResetDoneView`, `PasswordResetConfirmView`, `PasswordResetCompleteView`)
   - Criar templates: `users/password_reset.html`, `users/password_reset_done.html`, `users/password_reset_confirm.html`, `users/password_reset_complete.html`
   - Configurar backend de e-mail em `core/settings.py` (`EMAIL_BACKEND`, `EMAIL_HOST`, etc.)
   - Esforço: 4h
 
-- [ ] **AUTH-02** — Implementar alteração de senha via perfil
+- [x] **AUTH-02** — Implementar alteração de senha via perfil
   - Arquivo: `profiles/views.py`, `profiles/urls.py`
   - Usar `PasswordChangeView` do Django Auth
   - Criar template: `profiles/password_change.html`
   - Esforço: 2h
 
-- [ ] **AUTH-03** — Adicionar link "Esqueci minha senha" na tela de login
+- [x] **AUTH-03** — Adicionar link "Esqueci minha senha" na tela de login
   - Arquivo: `templates/users/login.html`
   - Adicionar link apontando para `password_reset`
   - Esforço: 15 min (depende de AUTH-01)
 
-- [ ] **AUTH-04** — Instalar e configurar `django-axes` para rate limiting
+- [x] **AUTH-04** — Instalar e configurar `django-axes` para rate limiting
   - Arquivo: `core/settings.py`, `requirements.txt`
   - `pip install django-axes`
   - Configurar: `AXES_FAILURE_LIMIT = 5`, `AXES_COOLOFF_TIME = 1`
   - Adicionar middleware: `axes.middleware.AxesMiddleware`
   - Esforço: 1h
 
-- [ ] **AUTH-05** — Adicionar validação de formato no campo `phone` do perfil
+- [x] **AUTH-05** — Adicionar validação de formato no campo `phone` do perfil
   - Arquivo: `profiles/forms.py`
   - Adicionar `RegexValidator` com padrão `^\(\d{2}\) \d{4,5}-\d{4}$`
   - Esforço: 20 min
 
-- [ ] **AUTH-06** — Tratar `ProtectedError` ao excluir Account ou Category com transações
+- [x] **AUTH-06** — Tratar `ProtectedError` ao excluir Account ou Category com transações
   - Arquivos: `accounts/views.py`, `categories/views.py`
   - Sobrescrever `delete()` ou usar `try/except ProtectedError` para exibir mensagem amigável
   - Esforço: 1h

@@ -2,6 +2,7 @@ from django.urls import path
 
 from categories.views import (
     CategoryCreateView,
+    CategoryDeleteView,
     CategoryListView,
     CategoryToggleView,
     CategoryUpdateView,
@@ -14,4 +15,5 @@ urlpatterns = [
     path('nova/', CategoryCreateView.as_view(), name='create'),
     path('<int:pk>/editar/', CategoryUpdateView.as_view(), name='update'),
     path('<int:pk>/toggle/', CategoryToggleView.as_view(), name='toggle'),
+    path('<int:pk>/excluir/', CategoryDeleteView.as_view(), name='delete'),
 ]

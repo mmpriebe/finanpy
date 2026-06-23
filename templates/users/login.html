@@ -214,6 +214,12 @@
               {% if form.password.errors %}
                 <p class="text-rose-400 text-xs mt-1.5">{{ form.password.errors|join:", " }}</p>
               {% endif %}
+              <div class="flex justify-end mt-1.5">
+                <a href="{% url 'users:password_reset' %}"
+                   class="text-xs text-violet-400 hover:text-violet-300 transition-colors duration-150">
+                  Esqueci minha senha
+                </a>
+              </div>
             </div>
 
           </div>

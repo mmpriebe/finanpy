@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models.deletion import ProtectedError
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from categories.forms import CategoryForm
 from categories.models import Category
@@ -55,3 +56,22 @@ class CategoryToggleView(LoginRequiredMixin, View):
         category.save()
         messages.success(request, 'Status da categoria atualizado.')
         return redirect('categories:list')
+
+
+class CategoryDeleteView(LoginRequiredMixin, DeleteView):
+    model = Category
+    template_name = 'categories/category_confirm_delete.html'
+    success_url = reverse_lazy('categories:list')
+
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)
+
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        except ProtectedError:
+            messages.error(
+                self.request,
+                'Esta categoria não pode ser excluída pois possui transações vinculadas.',
+            )
+            return redirect('categories:list')
